@@ -1,6 +1,4 @@
-read C:\temp\CPlexIn.lp
-se ti 300
-ch pr MILP
+read C:\OperationsOptimization\TestCPlex.lp
 opt
-write C:\temp\CPlexOut.SOL
+write C:\OperationsOptimization\CPlexOut.SOL
 quit

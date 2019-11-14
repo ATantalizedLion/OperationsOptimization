@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding="UTF-8" standalone="yes"?>
 <CPLEXSolution version="1.2">
  <header
-   problemName="C:\Users\Daan\Documents\Uni\Operations Research\OperationsOptimization\TestCPlex.lp"
+   problemName="C:\OperationsOptimization\TestCPlex.lp"
    objectiveValue="38"
    solutionTypeValue="1"
    solutionTypeString="basic"
