@@ -1,0 +1,6 @@
+read C:\temp\CPlexIn.lp
+se ti 300
+ch pr MILP
+opt
+write C:\temp\CPlexOut.SOL
+quit

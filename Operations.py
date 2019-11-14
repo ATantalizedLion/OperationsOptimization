@@ -39,10 +39,10 @@ f.close() #Works in LP Solve!
 #Write everything to file
 f = open("TestCPlex.lp","w+")
 f.write("Maximize objective:\n")
-f.write("X_1+2*X_2\n\n")
+f.write("X_1+2X_2\n\n")
 f.write("Subject to:\n")
-f.write("C1: X_1<=12\n")
-f.write("C2: X_2<=13\n")
+f.write("X_1<=12\n")
+f.write("X_2<=13\n")
 f.close() #works in CPLex, probably
     
     
