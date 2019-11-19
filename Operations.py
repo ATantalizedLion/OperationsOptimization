@@ -75,12 +75,13 @@ print("Update dataset") #Boris
 #add buffers (10 min)
 print("Implement buffers") #Boris
 
+print("Implement Generate Time Matrix") #Boris
 
 #list for binary generation
 binlist=[]
 
 #Take input flights and generate LP file
-f = open("FirstIteration.lp","w+")    
+f = open("LPFiles\FirstIteration.lp","w+")    
 
 #generate Objective
 f.write("Maximize objective:\n")
@@ -95,6 +96,9 @@ f.write("Subject to:\n")
 #for i in range(len(flights)):
 #    f.write("X_"+flights[i][1]+"....\n")
 #    binlist.append("X_"+flights[i][1])
+
+#Time overlap constraint:
+print("Implement Time overlap constraint") #Daan
 
 #Gate constraint 1: Domestic flight to dom gate
 print("Implement GC1") #Daan
@@ -118,7 +122,7 @@ f.write("end")
 
 
 
-
+f.close
 #Show dataset
 print("Implement dataset mooie grafiekjes") #Boris
 
