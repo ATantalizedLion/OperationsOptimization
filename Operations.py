@@ -63,15 +63,17 @@ def timeTo5Min(Time):
         return int(numTime)*60
     return int(converted/5)
 
+
+
 #    Name, identifier/number, Passengers Pi, Arrival time, Departure time, form factor
-flight1 = ["JFK23", 1, 250, timeTo5Min("5pm"),timeTo5Min("7pm"),"A"]
+flight1 = ["JFK23", 1, 250, timeTo5Min("5pm"),timeTo5Min("7pm")+2,"A"]
 flight2 = ["JFK23", 2, 250, timeTo5Min("5pm"),timeTo5Min("7pm"),"B"]
 flights = np.array([flight1,flight2])
 
-print("Update dataset")
+print("Update dataset") #Boris
 
-#add buffers
-print("Implement buffers")
+#add buffers (10 min)
+print("Implement buffers") #Boris
 
 
 #list for binary generation
@@ -84,7 +86,7 @@ f = open("FirstIteration.lp","w+")
 f.write("Maximize objective:\n")
 f.write("X_1+2X_2\n") #OBJECTIVE NEEDS TO BE CHANGED OBVIOUSLY
 f.write("\n")    
-print("Implement objectives")
+print("Implement objectives") #Tommy
 
 #generate constraints
 f.write("Subject to:\n")
@@ -95,13 +97,13 @@ f.write("Subject to:\n")
 #    binlist.append("X_"+flights[i][1])
 
 #Gate constraint 1: Domestic flight to dom gate
-print("Implement GC1")
+print("Implement GC1") #Daan
 
 #Gate constrain 2: 
-print("Implement GC2")
+print("Implement GC2") #Daan
 
 #Form factor constriant: (Compliance of a/c formfactor to bay/gate) 
-print("Implement FFC")
+print("Implement FFC") #Tommy
 
 f.write("\n")
 #Make parameters binary as needed
@@ -113,3 +115,19 @@ for i in binlist:
 #write end file
 f.write("\n")
 f.write("end")
+
+
+
+
+#Show dataset
+print("Implement dataset mooie grafiekjes") #Boris
+
+#Show solution
+print("Implement solution mooie grafiekjes")
+
+
+
+#Bussen bij gate X, als bus er is, telt afstand minder zwaar
+print("Implement showoff")
+
+
