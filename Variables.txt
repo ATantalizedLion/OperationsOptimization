@@ -1,0 +1,2 @@
+#List of variables and what they mean.
+# e.g. X_1 means Plane 1 does whatever. 
