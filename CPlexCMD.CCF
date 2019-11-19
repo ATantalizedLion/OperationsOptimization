@@ -1,4 +1,4 @@
-read C:\OperationsOptimization\TestCPlex.lp
+read C:\OperationsOptimization\FirstIteration.lp
 opt
 write C:\OperationsOptimization\CPlexOut.SOL
 quit
