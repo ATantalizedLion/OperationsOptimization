@@ -18,13 +18,13 @@ f.close() #Works in LP Solve!
 #Write everything to file
 f = open("TestCPlex.lp","w+")
 f.write("Maximize objective:\n")
-f.write("X_1+2X_2\n
+f.write("X_1+2X_2\n")
 f.write("\n")
 f.write("Subject to:\n")
 f.write("X_1<=12\n")
 f.write("X_2<=13\n")
 f.write("\n")
 f.write("End\n")
-f.close() #works in CPLex, probably
+f.close()
     
 #    
