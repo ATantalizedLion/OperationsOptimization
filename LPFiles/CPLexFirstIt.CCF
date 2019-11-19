@@ -1,4 +1,0 @@
-read C:\OperationsOptimization\LPFiles\FirstIteration.lp
-opt
-write C:\OperationsOptimization\LPFiles\CPlexFirstIteration.SOL
-quit

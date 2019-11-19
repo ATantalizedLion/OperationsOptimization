@@ -2,3 +2,9 @@
 cplex.log
 
 *.lp
+
+__pycache__/
+
+LPFiles/
+
+*.pyc

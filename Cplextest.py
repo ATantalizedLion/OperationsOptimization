@@ -4,6 +4,8 @@ Created on Mon Nov 18 08:37:31 2019
 
 @author: Daan
 """
+    
+from OOFunc import *
 
 #=================================================
             # Test for writing lp files
@@ -26,5 +28,5 @@ f.write("X_2<=13\n")
 f.write("\n")
 f.write("End\n")
 f.close()
-    
-#    
+
+generateRunFiles("TestCPlex.lp")

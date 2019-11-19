@@ -1,2 +1,7 @@
 #List of variables and what they mean.
 # e.g. X_1 means Plane 1 does whatever. 
+
+# being a flight number or gate identifier
+L Being gate A,B,C,D
+
+X_I##_L##    flight X at gate L

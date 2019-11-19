@@ -7,67 +7,17 @@ Created on Thu Nov 14 16:21:08 2019
 
 from math import *
 import numpy as np
+from OOFunc import generateRunFiles,timeToMin,timeTo5Min
 
 
-def timeToMin(Time):
-    #Takes input and converts it to minutes.
-    #Input can be in several formats: hh:mm (5:15), hh (5), hh:mm am/pm (5:15am), hh am/pm
-    #spaces do not matter
-    converted=0
-    if Time.find('pm')!=-1:
-        #add 12 hours to time if pm
-        converted+=12*60
-        #Get rid of am and pm since they have been used
-        numTime=Time.strip('am')
-        numTime=numTime.strip('pm')
-        numTime=numTime.strip(' ')
-    if Time.find(':')!=-1:
-        # ':' is found. 
-        # split time in hh:mm format into seperate items
-        spl=numTime.split(':')
-        if len(spl) == 2:
-            converted+=int(spl[0])*60+int(spl[1])
-        elif len(spl) == 1:
-            converted+=int(spl[0])*60
-        else:
-            print('error in timeToMin split')
-            return "error in timeToMin split"
-    else: 
-        return int(numTime)*60
-    return converted
+#Can also combine these into an array similar to the one for flights, would keep it overzichtelijker
+gates = ["1","2","3","4"] #change to numbers or anything if you prefer
+gatesDOM = [True, True, False, False] #Is the gate domestic?
+gatesClosedEvening = [] #Is the gate closed in the evening?
 
-def timeTo5Min(Time):
-    #Takes input and converts it to slot per 5.
-    #Input can be in several formats: hh:mm (5:15), hh (5), hh:mm am/pm (5:15am), hh am/pm
-    #spaces do not matter
-    converted=0
-    if Time.find('pm')!=-1:
-        #add 12 hours to time if pm
-        converted+=12*60
-        #Get rid of am and pm since they have been used
-        numTime=Time.strip('am')
-        numTime=numTime.strip('pm')
-        numTime=numTime.strip(' ')
-    if Time.find(':')!=-1:
-        # ':' is found. 
-        # split time in hh:mm format into seperate items
-        spl=numTime.split(':')
-        if len(spl) == 2:
-            converted+=int(spl[0])*60+int(spl[1])
-        elif len(spl) == 1:
-            converted+=int(spl[0])*60
-        else:
-            print('error in timeToMin split')
-            return "error in timeToMin split"
-    else: 
-        return int(numTime)*60
-    return int(converted/5)
-
-
-
-#    Name, identifier/number, Passengers Pi, Arrival time, Departure time, form factor
-flight1 = ["JFK23", 1, 250, timeTo5Min("5pm"),timeTo5Min("7pm")+2,"A"]
-flight2 = ["JFK23", 2, 250, timeTo5Min("5pm"),timeTo5Min("7pm"),"B"]
+#Name, identifier/number, Passengers Pi, Arrival time, Departure time, form factor, airliner(?) (For gate/terminal preference!)
+flight1 = ["JFK23", 1, 250, timeTo5Min("5pm"),timeTo5Min("7pm")+2,"A","KLM"]
+flight2 = ["JFK23", 2, 250, timeTo5Min("5pm"),timeTo5Min("7pm"),"B","Easyjet"]
 flights = np.array([flight1,flight2])
 
 print("Update dataset") #Boris
@@ -98,10 +48,17 @@ f.write("Subject to:\n")
 #    binlist.append("X_"+flights[i][1])
 
 #Time overlap constraint:
-print("Implement Time overlap constraint") #Daan
-
-#Gate constraint 1: Domestic flight to dom gate
-print("Implement GC1") #Daan
+print("Implement Time overlap constraint") #Daan - After matrices by boris are done
+print("Implement GC1") #Daan #Gate constraint 1: Domestic flight to dom gate
+print("Think I need time matrix here. Otherwise I'm summing all flights.")
+for i in range(len(flights)):
+    for j in range(len(gates)):
+        curVar=str("X_I"+flights[i][1]+"_L"+gates[j])
+        if gatesDOM[j] == True:
+            f.write(curVar+"\n")
+        else:
+            f.write(curVar+"\n")            
+        binlist.append(curVar)
 
 #Gate constrain 2: 
 print("Implement GC2") #Daan
@@ -119,10 +76,14 @@ for i in binlist:
 #write end file
 f.write("\n")
 f.write("end")
-
-
-
 f.close
+
+#RUN CPlex
+print("Running CPlex")
+generateRunFiles("FirstIteration.lp")
+print("CPlex should be done.")
+
+
 #Show dataset
 print("Implement dataset mooie grafiekjes") #Boris
 

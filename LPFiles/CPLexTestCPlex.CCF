@@ -1,4 +1,0 @@
-read C:\OperationsOptimization\LPFiles\TestCPlex.lp
-opt
-write C:\OperationsOptimization\LPFiles\CPlexTest.SOL
-quit
