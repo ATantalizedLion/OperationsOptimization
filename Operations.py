@@ -35,7 +35,7 @@ f = open("LPFiles\FirstIteration.lp","w+")
 
 P = [['P1',100],['P2',200]]
 D = [['D11',1],['D12',1]]
-X = ['X11','X12']
+X = ['X_I1_L1','X_I1_L2']
 PREF = [['PREF11',3],['PREF12',2]]
 #generate Objective
 f.write("Minimize objective:\n") #Z1 = sum_i sum_k Pi*Xi,k*Dterm_k

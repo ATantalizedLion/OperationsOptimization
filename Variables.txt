@@ -2,9 +2,9 @@
 # e.g. X_1 means Plane 1 does whatever. 
 
 P1 = Number of passengers of flight 1
-X11 = Decision variable flight 1 bay 1
-D11 = Distance terminal 1 and bay 1 
-PREF11 = Preference airline flight 1 bay 1
+X11 = Decision variable flight 1 gate 1
+D11 = Distance terminal 1 and gate 1 
+PREF11 = Preference airline flight 1 gate 1
 
 
 # being a flight number or gate identifier
