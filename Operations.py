@@ -37,6 +37,7 @@ P = [['P1',100],['P2',200]]
 D = [['D11',1],['D12',1]]
 X = ['X_I1_L1','X_I1_L2']
 PREF = [['PREF11',3],['PREF12',2]]
+
 #generate Objective
 f.write("Minimize objective:\n") #Z1 = sum_i sum_k Pi*Xi,k*Dterm_k
 for i in range(len(X)):
@@ -79,14 +80,14 @@ f.write("Subject to:\n")
 print("Implement Time overlap constraint") #Daan - After matrices by boris are done
 print("Implement GC1") #Daan #Gate constraint 1: Domestic flight to dom gate
 print("Think I need time matrix here. Otherwise I'm summing all flights.")
-for i in range(len(flights)):
-    for j in range(len(gates)):
-        curVar=str("X_I"+flights[i][1]+"_L"+gates[j])
-        if gatesDOM[j] == True:
-            f.write(curVar+"\n")
-        else:
-            f.write(curVar+"\n")            
-        binlist.append(curVar)
+for i in range(len(flights)): #For each flight i
+    for l in range(len(gates)): #For each gate l
+        curVar=str("X_I"+flights[i][1]+"_L"+gates[l]) #Name of curren decision variable for flight I and gate L
+        if gatesDOM[l] == True:
+            f.write(curVar+"\n") #IMPLEMENT
+        else: 
+            f.write(curVar+"\n") #IMPLEMENT 
+        binlist.append(curVar) #Make binary
 
 #Gate constrain 2: 
 print("Implement GC2") #Daan

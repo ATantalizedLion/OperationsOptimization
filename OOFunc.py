@@ -45,11 +45,12 @@ def timeTo5Min(Time):
 def generateRunFiles(lpFileName):
     #lpFileName is the name of the LP file (without.lp) in the LPFiles directory in the current work directory
     lpFileName=lpFileName.strip(".lp")
+    #Get the exact path and name of each file:
     filepath=getcwd()+"\LPFiles"
     CCFPath=filepath+"\\"+lpFileName+"CCF.CCF"
     BatPath=filepath+"\\"+lpFileName+"Run.bat"
     SOLPath=filepath+"\\"+lpFileName+"SOL.SOL"
-    LpPath=filepath+"\\"+lpFileName+".lp"
+    LpPath =filepath+"\\"+lpFileName+".lp"
     #generate CCF:
     f = open(CCFPath,"w+")
     f.write("read "+LpPath+"\n")
