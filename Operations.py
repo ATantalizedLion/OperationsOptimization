@@ -7,18 +7,16 @@ Created on Thu Nov 14 16:21:08 2019
 
 from math import *
 import numpy as np
-from OOFunc import generateRunFiles,timeToMin,timeTo5Min
+from OOFunc import generateRunFiles,Flight,Gate,Terminal
 
 
-#Can also combine these into an array similar to the one for flights, would keep it overzichtelijker
-gates = ["1","2","3","4"] #change to numbers or anything if you prefer
-gatesDOM = [True, True, False, False] #Is the gate domestic?
-gatesClosedEvening = [] #Is the gate closed in the evening?
+fl1 = Flight("JFK23", 250, "5pm","7pm","A","KLM") 
+fl2 = Flight("JFK23", 255, "5pm","7pm","B","EasyJet")
 
-#Name, identifier/number, Passengers Pi, Arrival time, Departure time, form factor, airliner(?) (For gate/terminal preference!)
-flight1 = ["JFK23", 1, 250, timeTo5Min("5pm"),timeTo5Min("7pm")+2,"A","KLM"]
-flight2 = ["JFK23", 2, 250, timeTo5Min("5pm"),timeTo5Min("7pm"),"B","Easyjet"]
-flights = np.array([flight1,flight2])
+t1 = Terminal("A",True,600)
+
+g1 = Gate(t1,True,500)
+
 
 print("Update dataset") #Boris
 
@@ -89,7 +87,7 @@ for i in range(len(flights)): #For each flight i
             f.write(curVar+"\n") #IMPLEMENT 
         binlist.append(curVar) #Make binary
 
-#Gate constrain 2: 
+#Gate constrain 2: # ensures flights after 6 pm are not in B or C 
 print("Implement GC2") #Daan
 
 #Form factor constriant: (Compliance of a/c formfactor to bay/gate) 
