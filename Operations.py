@@ -33,10 +33,38 @@ binlist=[]
 #Take input flights and generate LP file
 f = open("LPFiles\FirstIteration.lp","w+")    
 
+P = [['P1',100],['P2',200]]
+D = [['D11',1],['D12',1]]
+X = ['X11','X12']
+PREF = [['PREF11',3],['PREF12',2]]
 #generate Objective
-f.write("Maximize objective:\n")
-f.write("X_1+2X_2\n") #OBJECTIVE NEEDS TO BE CHANGED OBVIOUSLY
-f.write("\n")    
+f.write("Minimize objective:\n") #Z1 = sum_i sum_k Pi*Xi,k*Dterm_k
+for i in range(len(X)):
+    for j in range(len(D)):
+       f.write(P[i][0])
+       f.write("*")
+       f.write(X[i])
+       f.write("*")
+       f.write(D[j][0]) 
+       if i==(len(X)-1) and j==(len(D)-1):
+           f.write("")
+       else:
+           f.write("+")
+f.write("\n")
+f.write("\n")
+
+f.write("Maximize objective:\n") #Z2 = sum_i sum_k Xi,k * Dterm_k
+for i in range(len(X)):
+    for j in range(len(D)):
+       f.write(X[i])
+       f.write("*")
+       f.write(PREF[j][0]) 
+       if i==(len(X)-1) and j==(len(D)-1):
+           f.write("")
+       else:
+           f.write("+")
+f.write("\n")
+f.write("\n")
 print("Implement objectives") #Tommy
 
 #generate constraints
