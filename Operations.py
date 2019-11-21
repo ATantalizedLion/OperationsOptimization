@@ -57,21 +57,16 @@ fl13 = Flight("JFK36", 255, "7:30pm", "9:05pm","A",Transavia)
 fl14 = Flight("JFK37", 255, "7:45pm", "9:20pm","C",BritishAirways)
 fl15 = Flight("JFK38", 255, "8:15pm", "10:05pm","B",EasyJet)
 
-timemat = np.zeros((len(Flight._registry),len(Flight._registry)))
+timemat = np.zeros((len(Flight._registry),len(Flight._registry))) #Generating time overlap matrix
 i = 0
-j = 0
 for fl in Flight._registry:
+    j = 0
     for fl2 in Flight._registry:
         overlap = int(fl.timeSlotEndBuffer) - int(fl2.timeSlotBeginBuffer)
-        if overlap >= 0:
-            timemat[14][14] = 1
+        if overlap >= 0 and int(fl2.timeSlotEndBuffer) > int(fl.timeSlotBeginBuffer):
+            timemat[i][j] = 1
         j += 1
     i += 1
-    print(i,j)
-
-
-
-
 
 #list for binary generation
 binlist=[]
