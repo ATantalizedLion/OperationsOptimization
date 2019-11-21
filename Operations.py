@@ -67,7 +67,6 @@ for fl in Flight._registry:
             timemat[14][14] = 1
         j += 1
     i += 1
-    print(i,j)
 
 
 
@@ -79,25 +78,18 @@ binlist=[]
 #Take input flights and generate LP file
 f = open("LPFiles\FirstIteration.lp","w+")    
 
-P = [['P1',100],['P2',200]]
-D = [['D11',1],['D12',1]]
-X = ['X_I1_L1','X_I1_L2']
-PREF = [['PREF11',3],['PREF12',2]]
-
-
-
-
-
 #generate Objective
 f.write("Minimize multi-objective:\n") #Z1 = sum_i sum_k Pi*Xi,k*Dterm_k
 f.write("OBJ1: \n")
+
+print("Implement objective function weights") 
 
 amountFlights=len(Flight._registry)
 amountGates=len(Gate._registry)
 for fl in Flight._registry:
     for ga in Gate._registry:
        f.write(str(fl.passengers))
-       f.write("X_I"+str(fl.number)+"_L"+str(ga.number)+" ")
+       f.write(" X_I"+str(fl.number)+"_L"+str(ga.number)+" ")
        f.write(str(ga.distance)) 
        if fl.number!=(amountFlights) and ga.number!=(amountGates):
           f.write("+") 
