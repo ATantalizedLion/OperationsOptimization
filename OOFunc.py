@@ -51,6 +51,11 @@ def generateRunFiles(lpFileName):
     BatPath=filepath+"\\"+lpFileName+"Run.bat"
     SOLPath=filepath+"\\"+lpFileName+"SOL.SOL"
     LpPath =filepath+"\\"+lpFileName+".lp"
+    #Delete sol file before running:
+    try:
+        remove(SOLPath)
+    except:
+        removed=1
     #generate CCF:
     f = open(CCFPath,"w+")
     f.write("read "+LpPath+"\n")

@@ -44,9 +44,9 @@ EasyJet = Airline("EasyJet",0)
 fl1 = Flight("JFK23", 250, "5:15pm","7pm","A",KLM)
 fl2 = Flight("JFK24", 255, "5:25pm","6:35pm","B",EasyJet)
 fl3 = Flight("JFK26", 255, "5:55pm", "7:05pm","C",Delta)
-fl4 = Flight("JFK27", 255, "6:05pm", "7:10pm","D",BritishAirways)
+fl4 = Flight("JFK27", 300, "6:05pm", "7:10pm","D",BritishAirways)
 fl5 = Flight("JFK28", 255, "6:15pm", "7:15pm","A",Transavia)
-fl6 = Flight("JFK29", 255, "6:25pm", "7:20pm","D",Transavia)
+fl6 = Flight("JFK29", 20, "6:25pm", "7:20pm","D",Transavia)
 fl7 = Flight("JFK30", 255, "6:30pm", "7:30pm","C",AirFrance)
 fl8 = Flight("JFK31", 255, "6:35pm", "7:45pm","A",Transavia)
 fl9 = Flight("JFK32", 255, "6:50pm", "8:10pm","B",KLM)
@@ -56,6 +56,7 @@ fl12 = Flight("JFK35", 255, "7:15pm", "8:55pm","C",KLM)
 fl13 = Flight("JFK36", 255, "7:30pm", "9:05pm","A",Transavia)
 fl14 = Flight("JFK37", 255, "7:45pm", "9:20pm","C",BritishAirways)
 fl15 = Flight("JFK38", 255, "8:15pm", "10:05pm","B",EasyJet)
+
 
 timemat = np.zeros((len(Flight._registry),len(Flight._registry))) #Generating time overlap matrix
 i = 0
@@ -75,31 +76,34 @@ binlist=[]
 f = open("LPFiles\FirstIteration.lp","w+")    
 
 #generate Objective
-f.write("Minimize multi-objective:\n") #Z1 = sum_i sum_k Pi*Xi,k*Dterm_k
-f.write("OBJ1: \n")
+#f.write("Minimize multi-objective:\n") #Z1 = sum_i sum_k Pi*Xi,k*Dterm_k
+f.write("Minimize objective:\n")
+#f.write("OBJ1: \n")
 
 print("Implement objective function weights") 
 
 amountFlights=len(Flight._registry)
 amountGates=len(Gate._registry)
+
 for fl in Flight._registry:
     for ga in Gate._registry:
-       f.write(str(fl.passengers))
-       f.write(" X_I"+str(fl.number)+"_L"+str(ga.number)+" ")
-       f.write(str(ga.distance)) 
-       if fl.number!=(amountFlights) and ga.number!=(amountGates):
-          f.write("+") 
+       f.write(str(fl.passengers*ga.distance)) 
+       f.write(" X_I"+str(fl.number)+"_L"+str(ga.number))
+       if int(fl.number)!=int(amountFlights) or int(ga.number)!=int(amountGates):
+          f.write(" + ") 
        else:
           f.write("")
-f.write("\n")
-f.write("\n")
-f.write("OBJ2: \n")
-
-
-for fl in Flight._registry: #Z2 = sum_i sum_k Xi,k * Dterm_k
-    for ga in Gate._registry:
-       f.write("-"+"X_I"+str(fl.number)+"_L"+str(ga.number)+" ")
-       f.write(str(fl.gatePref))
+          
+#f.write("\n")
+#f.write("\n")
+#f.write("OBJ2: \n")
+#
+#
+#for fl in Flight._registry: #Z2 = sum_i sum_k Xi,k * Dterm_k
+#    for ga in Gate._registry:
+#       f.write("-"+"X_I"+str(fl.number)+"_L"+str(ga.number)+" ")
+#       f.write(str(fl.gatePref))
+       
 f.write("\n")
 f.write("\n")
 print("Implement objectives") #Tommy
@@ -107,24 +111,29 @@ print("Implement objectives") #Tommy
 #generate constraints
 f.write("Subject to:\n")
 
-# Example for loop for constraints
-#for i in range(len(flights)):
-#    f.write("X_"+flights[i][1]+"....\n")
-#    binlist.append("X_"+flights[i][1])
-
-#Time overlap constraint:
-print("Implement Time overlap constraint") #Daan - After matrices by boris are done
-print("Implement GC1") #Daan #Gate constraint 1: Domestic flight to dom gate
-print("Think I need time matrix here. Otherwise I'm summing all flights.")
-
+#Make all X_I_L binary, and have all flights require a gate
 for fl in Flight._registry:
     for ga in Gate._registry:
         curVar=str("X_I"+str(fl.number)+"_L"+str(ga.number))
-        if ga.domesticFlight == True:
-            f.write(curVar+"\n") #IMPLEMENT
-        else: 
-            f.write(curVar+"\n") #IMPLEMENT 
+        f.write(curVar)
+        if int(ga.number)!=int(amountGates):
+            f.write(" + ") 
+        else:
+            f.write(" = 1 \n")            
         binlist.append(curVar) #Make binary
+
+#Time overlap constraint:        
+#For all overlapping flights, gates can only have one flight assigned:
+for i in range(len(timemat)):
+    for j in range(i):
+        if timemat[i,j]==1:
+            flight1=Flight._registry[i]
+            flight2=Flight._registry[j]
+            for ga in Gate._registry:
+                flight1var=str("X_I"+str(flight1.number)+"_L"+str(ga.number))
+                flight2var=str("X_I"+str(flight2.number)+"_L"+str(ga.number))
+                f.write(flight1var + " + " + flight2var + " <= 1 \n") 
+            
 
 #Gate constrain 2: # ensures flights after 6 pm are not in B or C 
 print("Implement GC2") #Daan
@@ -161,4 +170,4 @@ print("Implement solution mooie grafiekjes")
 #Bussen bij gate X, als bus er is, telt afstand minder zwaar
 print("Implement showoff")
 
-
+print("Implement bays?") #Daan
