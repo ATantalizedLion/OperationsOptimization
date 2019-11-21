@@ -119,7 +119,7 @@ class Flight(object):
             self.timeSlotEndBuffer = str(timeTo5Min(arrivalTime)+2)
             
             #Get gatepref
-            if airline.gatepPref != 0:
+            if airline.gatePref != 0:
                 self.gatePref = airline.gatePref.number
             else:
                 self.gatePref = 0
