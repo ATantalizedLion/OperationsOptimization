@@ -76,9 +76,9 @@ binlist=[]
 f = open("LPFiles\FirstIteration.lp","w+")    
 
 #generate Objective
-#f.write("Minimize multi-objective:\n") #Z1 = sum_i sum_k Pi*Xi,k*Dterm_k
-f.write("Minimize objective:\n")
-#f.write("OBJ1: \n")
+f.write("Minimize multi-objectives\n") #Z1 = sum_i sum_k Pi*Xi,k*Dterm_k
+#f.write("Minimize objective:\n")
+f.write("OBJ1: Priority=0 Weight=1.0 Abstol=0.0 Reltol=0.0\n")
 
 print("Implement objective function weights") 
 
@@ -94,15 +94,16 @@ for fl in Flight._registry:
        else:
           f.write("")
           
-#f.write("\n")
-#f.write("\n")
-#f.write("OBJ2: \n")
-#
+f.write("\n")
+f.write("\n")
+f.write("OBJ2: Priority=0 Weight=1.0 Abstol=0.0 Reltol=0.0\n")
+
 #ff uitgecomment om te testen
-#for fl in Flight._registry: #Z2 = sum_i sum_k Xi,k * Dterm_k
-#    for ga in Gate._registry:
-#       f.write("-"+"X_I"+str(fl.number)+"_L"+str(ga.number)+" ")
-#       f.write(str(fl.gatePref))
+for fl in Flight._registry: #Z2 = sum_i sum_k Xi,k * Dterm_k
+    for ga in Gate._registry:
+       if int(fl.gatePref)!=0:
+           f.write("-"+str(fl.gatePref))
+           f.write(" X_I"+str(fl.number)+"_L"+str(ga.number)+" ")
        
 f.write("\n")
 f.write("\n")
