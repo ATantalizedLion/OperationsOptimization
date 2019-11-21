@@ -6,18 +6,25 @@ Created on Thu Nov 14 16:21:08 2019
 """
 
 import matplotlib.pyplot as plt
-from OOFunc import generateRunFiles,Flight,Gate,Terminal,timeToMin
+from OOFunc import generateRunFiles,Flight,Airline,Gate,Terminal,timeToMin
 
 #Terminal(name,openEvening,distance)
 t1 = Terminal("A",True,600)
 
 #Gate(terminal,domesticFlight,distanceToTerminal)
 g1 = Gate(t1,True,500)
+g2 = Gate(t1,True,600)
+g3 = Gate(t1,True,600)
+
+#Airliner(name,gatePref)
+KLM = Airline("KLM",g1)
+EasyJet = Airline("EasyJet",g2)
+AirFrance = Airline("AirFrance",g3)
 
 #Flight(identifier,passengers,arrivalTime,departureTime,formFactor,airliner)
-fl1 = Flight("JFK23", 250, "5pm","7pm","A","KLM") 
-fl2 = Flight("JFK24", 255, "5pm","7pm","B","EasyJet")
-fl3 = Flight("JFK25", 255, "6pm", "8pm","A","Airfrance")
+fl1 = Flight("JFK23", 250, "5pm","7pm","A", KLM) 
+fl2 = Flight("JFK24", 255, "5pm","7pm","B", EasyJet)
+fl3 = Flight("JFK25", 255, "6pm", "8pm","A", AirFrance)
 
 print("Update dataset") #Boris
 
