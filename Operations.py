@@ -98,7 +98,7 @@ for fl in Flight._registry:
 #f.write("\n")
 #f.write("OBJ2: \n")
 #
-#
+#ff uitgecomment om te testen
 #for fl in Flight._registry: #Z2 = sum_i sum_k Xi,k * Dterm_k
 #    for ga in Gate._registry:
 #       f.write("-"+"X_I"+str(fl.number)+"_L"+str(ga.number)+" ")
@@ -136,7 +136,7 @@ for i in range(len(timemat)):
             
 
 #Gate constrain 2: # ensures flights after 6 pm are not in B or C 
-print("Implement GC2") #Daan
+print("Implement GC2") 
 
 #Form factor constraint: (Compliance of a/c formfactor to bay/gate) 
 print("Implement FFC") #Tommy
@@ -158,12 +158,10 @@ print("CPlex should be done.")
 
 
 #Show dataset
-print("Implement dataset mooie grafiekjes") #Boris
-
-
+print("Implement dataset mooie grafiekjes ") #Boris
 
 #Show solution
-print("Implement solution mooie grafiekjes")
+print("Implement solution mooie grafiekjes - using existing function")
 
 
 
