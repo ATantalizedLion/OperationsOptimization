@@ -79,7 +79,7 @@ print("Think I need time matrix here. Otherwise I'm summing all flights.")
 
 for fl in Flight._registry:
     for ga in Gate._registry:
-        curVar=str("X_I"+fl.number+"_L"+ga.name)
+        curVar=str("X_I"+str(fl.number)+"_L"+str(ga.number))
         if ga.domesticFlight == True:
             f.write(curVar+"\n") #IMPLEMENT
         else: 
