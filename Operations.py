@@ -101,6 +101,8 @@ for fl in Flight._registry:
 f.write("\n")
 f.write("\n")
 f.write("OBJ2: \n")
+
+
 for fl in Flight._registry: #Z2 = sum_i sum_k Xi,k * Dterm_k
     for ga in Gate._registry:
        f.write("-"+"X_I"+str(fl.number)+"_L"+str(ga.number)+" ")
