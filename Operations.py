@@ -72,18 +72,24 @@ PREF = [['PREF11',3],['PREF12',2]]
 f.write("Minimize multi-objective:\n") #Z1 = sum_i sum_k Pi*Xi,k*Dterm_k
 f.write("OBJ1: \n")
 
+amountFlights=len(Flight._registry)
+amountGates=len(Gate._registry)
 for fl in Flight._registry:
     for ga in Gate._registry:
        f.write(str(fl.passengers))
-       f.write("X_I"+str(fl.number)+"_L"+str(ga.number))
+       f.write("X_I"+str(fl.number)+"_L"+str(ga.number)+" ")
        f.write(str(ga.distance)) 
-       f.write("+")
+       if fl.number!=(amountFlights) and ga.number!=(amountGates):
+          f.write("+") 
+       else:
+          f.write("")
 f.write("\n")
 f.write("\n")
 f.write("OBJ2: \n")
 for fl in Flight._registry: #Z2 = sum_i sum_k Xi,k * Dterm_k
     for ga in Gate._registry:
-       f.write("-"+"X_I"+str(fl.number)+"_L"+str(ga.number))
+       f.write("-"+"X_I"+str(fl.number)+"_L"+str(ga.number)+" ")
+       f.write(str(fl.gatePref))
 f.write("\n")
 f.write("\n")
 print("Implement objectives") #Tommy
