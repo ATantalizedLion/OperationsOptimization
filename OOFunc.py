@@ -8,6 +8,9 @@ Created on Tue Nov 19 14:27:18 2019
 
 from os import getcwd,remove
 
+def todo(string):
+    return #print(string)
+
 def timeToMin(Time):
     #Takes input and converts it to minutes.
     #Input can be in several formats: hh:mm (5:15), hh (5), hh:mm am/pm (5:15am), hh am/pm
@@ -43,6 +46,7 @@ def timeTo5Min(Time):
     return int(converted/5)
 
 def generateRunFiles(lpFileName):
+    import time 
     #lpFileName is the name of the LP file (without.lp) in the LPFiles directory in the current work directory
     lpFileName=lpFileName.strip(".lp")
     #Get the exact path and name of each file:
@@ -66,15 +70,21 @@ def generateRunFiles(lpFileName):
     #generate BAT
     f = open(BatPath,"w+")
     f.write('"C:\Program Files\IBM\ILOG\CPLEX_Studio129\cplex\\bin\\x64_win64\cplex.exe" < '+CCFPath)
-    f.close() 
+    f.close()
+    
+    time.sleep(1)
+    
     #run BAT
     from subprocess import Popen
     p = Popen(BatPath)
     p.wait()
+    
+    time.sleep(1)
+    
     #cleanUpCCFandBAT:
     remove(BatPath)
     remove(CCFPath)
-    return
+    return SOLPath
 
 
 class Terminal(object):

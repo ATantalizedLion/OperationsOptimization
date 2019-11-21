@@ -5,9 +5,10 @@ Created on Thu Nov 14 16:21:08 2019
 @author: Daan
 """
 
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import numpy as np
-from OOFunc import generateRunFiles,Flight,Airline,Gate,Terminal,timeToMin
+from OOFunc import generateRunFiles,Flight,Airline,Gate,Terminal,todo
+import xml.etree.ElementTree as ET
 
 #Terminal(name,openEvening,distance)
 t1 = Terminal("A",True,250)
@@ -80,7 +81,7 @@ f.write("Minimize multi-objectives\n") #Z1 = sum_i sum_k Pi*Xi,k*Dterm_k
 #f.write("Minimize objective:\n")
 f.write("OBJ1: Priority=0 Weight=1.0 Abstol=0.0 Reltol=0.0\n")
 
-print("Implement objective function weights") 
+todo("Implement objective function weights") 
 
 amountFlights=len(Flight._registry)
 amountGates=len(Gate._registry)
@@ -107,7 +108,7 @@ for fl in Flight._registry: #Z2 = sum_i sum_k Xi,k * Dterm_k
        
 f.write("\n")
 f.write("\n")
-print("Implement objectives") #Tommy
+todo("Implement objectives") #Tommy
 
 #generate constraints
 f.write("Subject to:\n")
@@ -137,10 +138,10 @@ for i in range(len(timemat)):
             
 
 #Gate constrain 2: # ensures flights after 6 pm are not in B or C 
-print("Implement GC2") 
+todo("Implement GC2") 
 
 #Form factor constraint: (Compliance of a/c formfactor to bay/gate) 
-print("Implement FFC") #Tommy
+todo("Implement FFC") #Tommy
 
 f.write("\n")
 #Make parameters binary as needed
@@ -152,21 +153,50 @@ f.write("\n")
 f.write("end")
 f.close
 
-#RUN CPlex
-print("Running CPlex")
-generateRunFiles("FirstIteration.lp")
-print("CPlex should be done.")
 
+
+#RUN CPlex
+sol = generateRunFiles("FirstIteration.lp")   #Returns solution filepath
+
+lines = [line.rstrip('\n') for line in open(sol)]
+lines = [line.strip() for line in lines]
+
+if lines[6].split('=')[0]=='objectiveValue':
+    objectiveValue=float(lines[6].split('=')[1].strip('"'))
+else:
+    print("ERROR: objectiveValue not at expect location!")
+
+#Import data
+tree = ET.parse(sol)
+root = tree.getroot()
+
+solNameList=[]
+solValueList=[]
+for child in root[3]:
+    locals().update(child.attrib) #name,value,index
+    solNameList.append(name)
+    solValueList.append(value)
+
+offset = solNameList.index("X_I1_L1")
+a = np.zeros((amountFlights,amountGates))
+b = np.empty((amountFlights,amountGates), dtype=object)
+for i in range(amountFlights):
+    for j in range(amountGates):
+        fgi=offset+i*amountGates+j #flightGateIndex
+        a[i,j]=solValueList[fgi]
+        b[i,j]=solNameList[fgi] #For verification
+
+print("Objective Value is:"+str(objectiveValue))
 
 #Show dataset
-print("Implement dataset mooie grafiekjes ") #Boris
+todo("Implement dataset mooie grafiekjes ") #Boris
 
 #Show solution
-print("Implement solution mooie grafiekjes - using existing function")
+todo("Implement solution mooie grafiekjes - using existing function")
 
 
 
 #Bussen bij gate X, als bus er is, telt afstand minder zwaar
-print("Implement showoff")
+todo("Implement showoff")
 
-print("Implement bays?") #Daan
+todo("Implement bays?") #Daan
