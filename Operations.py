@@ -6,6 +6,7 @@ Created on Thu Nov 14 16:21:08 2019
 """
 
 import matplotlib.pyplot as plt
+import numpy as np
 from OOFunc import generateRunFiles, Flight, Gate, Terminal, timeToMin
 
 #Terminal(name,openEvening,distance)
@@ -31,10 +32,21 @@ f23 = Flight("JFK36", 255, "7:30pm", "9:05pm","A","Transavia")
 f24 = Flight("JFK37", 255, "7:45pm", "9:20pm","C","British Airways")
 f25 = Flight("JFK38", 255, "8:15pm", "10:05pm","B","Lufthansa")
 
+timemat = np.zeros((len(Flight._registry),len(Flight._registry)))
+i = 0
+j = 0
+for fl in Flight._registry:
+    for fl2 in Flight._registry:
+        overlap = int(fl.timeSlotEndBuffer) - int(fl2.timeSlotBeginBuffer)
+        if overlap >= 0:
+            timemat[14][14] = 1
+        j += 1
+    i += 1
+    print(i,j)
 
-print("Update dataset") #Boris
 
-print("Implement Generate Time Matrix") #Boris
+
+
 
 #list for binary generation
 binlist=[]

@@ -85,9 +85,9 @@ class Flight(object):
             
             #timeSlotsPer5Min
             self.timeSlotBegin = str(timeTo5Min(arrivalTime))
-            self.timeSlotEnd = str(timeTo5Min(arrivalTime))
+            self.timeSlotEnd = str(timeTo5Min(departureTime))
             self.timeSlotBeginBuffer = str(timeTo5Min(arrivalTime)-2)
-            self.timeSlotEndBuffer = str(timeTo5Min(arrivalTime)+2)
+            self.timeSlotEndBuffer = str(timeTo5Min(departureTime)+2)
 
 class Terminal(object):
         _registry = [] #Keep track of all instances
