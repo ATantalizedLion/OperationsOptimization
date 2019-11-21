@@ -119,7 +119,10 @@ class Flight(object):
             self.timeSlotEndBuffer = str(timeTo5Min(arrivalTime)+2)
             
             #Get gatepref
-            self.gatePref = airline.gatePref.number
+            if airline.gatepPref != 0:
+                self.gatePref = airline.gatePref.number
+            else:
+                self.gatePref = 0
 
 def plotTimeTable(data, grid=0, xTickLabels=[],yTicks=True):
     import matplotlib.pyplot as plt
