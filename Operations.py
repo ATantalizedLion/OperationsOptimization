@@ -23,6 +23,7 @@ g7 = Gate(t1,True,600)
 g8 = Gate(t1,True,600)
 g9 = Gate(t1,True,600)
 g10 = Gate(t1,True,600)
+g11 = baklbgelj
 
 #Airliner(name,gatePref)
 AirFrance   = Airline("AirFrance",g3)
