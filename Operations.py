@@ -34,32 +34,26 @@ D = [['D11',1],['D12',1]]
 X = ['X_I1_L1','X_I1_L2']
 PREF = [['PREF11',3],['PREF12',2]]
 
-#generate Objective
-f.write("Minimize objective:\n") #Z1 = sum_i sum_k Pi*Xi,k*Dterm_k
-for i in range(len(X)):
-    for j in range(len(D)):
-       f.write(P[i][0])
-       f.write("*")
-       f.write(X[i])
-       f.write("*")
-       f.write(D[j][0]) 
-       if i==(len(X)-1) and j==(len(D)-1):
-           f.write("")
-       else:
-           f.write("+")
-f.write("\n")
-f.write("\n")
 
-f.write("Maximize objective:\n") #Z2 = sum_i sum_k Xi,k * Dterm_k
-for i in range(len(X)):
-    for j in range(len(D)):
-       f.write(X[i])
-       f.write("*")
-       f.write(PREF[j][0]) 
-       if i==(len(X)-1) and j==(len(D)-1):
-           f.write("")
-       else:
-           f.write("+")
+
+
+
+#generate Objective
+f.write("Minimize multi-objective:\n") #Z1 = sum_i sum_k Pi*Xi,k*Dterm_k
+f.write("OBJ1: \n")
+
+for fl in Flight._registry:
+    for ga in Gate._registry:
+       f.write(str(fl.passengers))
+       f.write("X_I"+str(fl.number)+"_L"+str(ga.number))
+       f.write(str(ga.distance)) 
+       f.write("+")
+f.write("\n")
+f.write("\n")
+f.write("OBJ2: \n")
+for fl in Flight._registry: #Z2 = sum_i sum_k Xi,k * Dterm_k
+    for ga in Gate._registry:
+       f.write("-"+"X_I"+str(fl.number)+"_L"+str(ga.number))
 f.write("\n")
 f.write("\n")
 print("Implement objectives") #Tommy
