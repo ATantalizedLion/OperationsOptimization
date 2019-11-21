@@ -21,7 +21,7 @@ def timeToMin(Time):
         numTime=numTime.strip('pm')
         numTime=numTime.strip(' ')
     if Time.find(':')!=-1:
-        # ':' is found. 
+        # ':' is found.
         # split time in hh:mm format into seperate items
         spl=numTime.split(':')
         if len(spl) == 2:
@@ -71,23 +71,6 @@ def generateRunFiles(lpFileName):
     remove(CCFPath)
     return
 
-class Flight(object):
-        _registry = [] #Keep track of all instances
-        def __init__(self,identifier,passengers,arrivalTime,departureTime,formFactor,airliner):
-            self._registry.append(self) #Add this flight to list of flights
-            self.number=len(Flight._registry) #Give flight a number
-            self.identifier = identifier #Store the flight code of the aircraft
-            self.passengers = passengers #Amount of passengers in the aircraft
-            self.arrivalTime = arrivalTime #Arrival time of the aircraft
-            self.departureTime = departureTime #Departure time of the aircraft
-            self.formFactor = formFactor #formFactor of the aircraft (for compliance of aircraft to size constraints)
-            self.airliner = airliner #What airline does the aircraft belong to
-            
-            #timeSlotsPer5Min
-            self.timeSlotBegin = str(timeTo5Min(arrivalTime))
-            self.timeSlotEnd = str(timeTo5Min(departureTime))
-            self.timeSlotBeginBuffer = str(timeTo5Min(arrivalTime)-2)
-            self.timeSlotEndBuffer = str(timeTo5Min(departureTime)+2)
 
 class Terminal(object):
         _registry = [] #Keep track of all instances
@@ -108,9 +91,39 @@ class Gate(object):
             self.distanceToTerminal = distanceToTerminal #distance from gate to Terminal entrance/exit
             self.openEvening = terminal.openEvening #inherit openEvening boolean from Terminal class
             self.distance = distanceToTerminal + terminal.distance #distance from gate to airport entrance/exit
+            
+class Airline(object):
+        _registry = [] #Keep track of all instances
+        def __init__(self,name,gatePref):
+            self._registry.append(self) #Add terminal to list of terminals
+            self.name=name #Give airliner a name A,B,C...
+            self.number=len(Airline._registry) #Give terminal a number
+            self.gatePref = gatePref #what gate does the airliner prefer
+            
+class Flight(object):
+        _registry = [] #Keep track of all instances
+        def __init__(self,identifier,passengers,arrivalTime,departureTime,formFactor,airline):
+            self._registry.append(self) #Add this flight to list of flights
+            self.number=len(Flight._registry) #Give flight a number
+            self.identifier = identifier #Store the flight code of the aircraft
+            self.passengers = passengers #Amount of passengers in the aircraft
+            self.arrivalTime = arrivalTime #Arrival time of the aircraft
+            self.departureTime = departureTime #Departure time of the aircraft
+            self.formFactor = formFactor #formFactor of the aircraft (for compliance of aircraft to size constraints)
+            self.airline = airline #What airline does the aircraft belong to as an object
+            
+            #timeSlotsPer5Min
+            self.timeSlotBegin = str(timeTo5Min(arrivalTime))
+            self.timeSlotEnd = str(timeTo5Min(arrivalTime))
+            self.timeSlotBeginBuffer = str(timeTo5Min(arrivalTime)-2)
+            self.timeSlotEndBuffer = str(timeTo5Min(arrivalTime)+2)
+            
+            #Get gatepref
+            self.gatePref = airline.gatePref.number
 
-def plotTimeTable(data, grid=0, xTickLabels=[]):
+def plotTimeTable(data, grid=0, xTickLabels=[],yTicks=True):
     import matplotlib.pyplot as plt
+    import numpy as np
     #Plot the input data [an array with rows being the time gates and the cols
     #being the timeslot] in a timetable-like way.
     #
@@ -124,6 +137,8 @@ def plotTimeTable(data, grid=0, xTickLabels=[]):
     #So if the first label is the time at which your dataset starts and you simply
     #include all following labels that are still within your data set the program
     #will take care of the rest :)
+    #
+    #yTicks adds ticks with Gate 1, 2 etc. to the side, requires Grid=1
     #======================================================
     
     #Set up figure
@@ -143,7 +158,13 @@ def plotTimeTable(data, grid=0, xTickLabels=[]):
         ax.set_xticks(np.arange(0,width+1, 1)) #Set X tick spacing
         ax.set_yticks(np.arange(0,height+1, 1)) #Set Y tick spacing
         plt.grid(color='black') #Make lines less ugly
- 
+    
+    if yTicks==True:
+        yTicksList=[]
+        for i in range(height):
+            yTicksList.append("Gate "+str(i+1))
+        ax.axes.yaxis.set_ticklabels(yTicksList)
+        
     #Process xTickLabels list into properly distributed list
     xTickLabelsProcessed=[] #List for the actual to be used labels
     if len(xTickLabels)!=0: #If lists is not equal to zero it needs to be processed.
@@ -182,3 +203,10 @@ def plotTimeTable(data, grid=0, xTickLabels=[]):
                          horizontalalignment='center',
                          verticalalignment='center')
     plt.show() #Victory
+    
+#data = [["a", 0 ,"d","d","f","f", 0 ],
+#        [ 0 ,"b","b", 0 ,"e", 0 ,"g"],
+#        [ 0 , 0 ,"c","c","c","h", 0 ],
+#        [ 0 , 0 ,"i","i", 0 ,"j","k"]]
+#
+#plotTimeTable(data,1,["12pm","1pm"])
