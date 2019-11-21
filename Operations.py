@@ -5,23 +5,21 @@ Created on Thu Nov 14 16:21:08 2019
 @author: Daan
 """
 
-from math import *
-import numpy as np
-from OOFunc import generateRunFiles,Flight,Gate,Terminal
+import matplotlib.pyplot as plt
+from OOFunc import generateRunFiles,Flight,Gate,Terminal,timeToMin
 
-
-fl1 = Flight("JFK23", 250, "5pm","7pm","A","KLM") 
-fl2 = Flight("JFK23", 255, "5pm","7pm","B","EasyJet")
-
+#Terminal(name,openEvening,distance)
 t1 = Terminal("A",True,600)
 
+#Gate(terminal,domesticFlight,distanceToTerminal)
 g1 = Gate(t1,True,500)
 
+#Flight(identifier,passengers,arrivalTime,departureTime,formFactor,airliner)
+fl1 = Flight("JFK23", 250, "5pm","7pm","A","KLM") 
+fl2 = Flight("JFK24", 255, "5pm","7pm","B","EasyJet")
+fl3 = Flight("JFK25", 255, "6pm", "8pm","A","Airfrance")
 
 print("Update dataset") #Boris
-
-#add buffers (10 min)
-print("Implement buffers") #Boris
 
 print("Implement Generate Time Matrix") #Boris
 
@@ -78,10 +76,11 @@ f.write("Subject to:\n")
 print("Implement Time overlap constraint") #Daan - After matrices by boris are done
 print("Implement GC1") #Daan #Gate constraint 1: Domestic flight to dom gate
 print("Think I need time matrix here. Otherwise I'm summing all flights.")
-for i in range(len(flights)): #For each flight i
-    for l in range(len(gates)): #For each gate l
-        curVar=str("X_I"+flights[i][1]+"_L"+gates[l]) #Name of curren decision variable for flight I and gate L
-        if gatesDOM[l] == True:
+
+for fl in Flight._registry:
+    for ga in Gate._registry:
+        curVar=str("X_I"+fl.number+"_L"+ga.name)
+        if ga.domesticFlight == True:
             f.write(curVar+"\n") #IMPLEMENT
         else: 
             f.write(curVar+"\n") #IMPLEMENT 
@@ -90,16 +89,14 @@ for i in range(len(flights)): #For each flight i
 #Gate constrain 2: # ensures flights after 6 pm are not in B or C 
 print("Implement GC2") #Daan
 
-#Form factor constriant: (Compliance of a/c formfactor to bay/gate) 
+#Form factor constraint: (Compliance of a/c formfactor to bay/gate) 
 print("Implement FFC") #Tommy
 
 f.write("\n")
 #Make parameters binary as needed
 f.write("binary\n")
-
 for i in binlist:
     f.write(i+" ")
-
 #write end file
 f.write("\n")
 f.write("end")
@@ -113,6 +110,8 @@ print("CPlex should be done.")
 
 #Show dataset
 print("Implement dataset mooie grafiekjes") #Boris
+
+
 
 #Show solution
 print("Implement solution mooie grafiekjes")

@@ -86,12 +86,8 @@ class Flight(object):
             #timeSlotsPer5Min
             self.timeSlotBegin = str(timeTo5Min(arrivalTime))
             self.timeSlotEnd = str(timeTo5Min(arrivalTime))
-            self.timeSlotBeginBuffer = str(timeTo5Min(arrivalTime)-3)
-            self.timeSlotEndBuffer = str(timeTo5Min(arrivalTime)+3)
-            
-#print all flight names would be:
-#for fl in Flight._registry:
-#    print(fl.name)
+            self.timeSlotBeginBuffer = str(timeTo5Min(arrivalTime)-2)
+            self.timeSlotEndBuffer = str(timeTo5Min(arrivalTime)+2)
 
 class Terminal(object):
         _registry = [] #Keep track of all instances
@@ -112,3 +108,77 @@ class Gate(object):
             self.distanceToTerminal = distanceToTerminal #distance from gate to Terminal entrance/exit
             self.openEvening = terminal.openEvening #inherit openEvening boolean from Terminal class
             self.distance = distanceToTerminal + terminal.distance #distance from gate to airport entrance/exit
+
+def plotTimeTable(data, grid=0, xTickLabels=[]):
+    import matplotlib.pyplot as plt
+    #Plot the input data [an array with rows being the time gates and the cols
+    #being the timeslot] in a timetable-like way.
+    #
+    #grid is a boolean deciing whether or not grid lines are shown
+    #
+    #xTickLabels is a list of labels to be distributed equally over the Xaxis
+    #according to their ratio and modulus.
+    #e.g. a dataset with 7 columns and timesteps of 15 minutes starting at 12pm
+    #would end at 1:45pm, giving xTickLabels=["12pm","1am"] as input would give
+    #the proper result. 
+    #So if the first label is the time at which your dataset starts and you simply
+    #include all following labels that are still within your data set the program
+    #will take care of the rest :)
+    #======================================================
+    
+    #Set up figure
+    width=len(data[0])
+    height=len(data)
+    fig = plt.figure() 
+    ax = fig.add_subplot(111)
+    plt.ylim(height,0) #Fit to Y, put gate 1 at the top
+    plt.xlim(0,width) #Fit to X
+    ax.set_aspect(1) #Make square
+
+    #Process grid input/output
+    if grid==0:
+        ax.axes.get_yaxis().set_visible(False) #Hide all Y axis things (grid, labels)
+    else:
+        ax.axes.yaxis.set_ticklabels([]) #Hide labels
+        ax.set_xticks(np.arange(0,width+1, 1)) #Set X tick spacing
+        ax.set_yticks(np.arange(0,height+1, 1)) #Set Y tick spacing
+        plt.grid(color='black') #Make lines less ugly
+ 
+    #Process xTickLabels list into properly distributed list
+    xTickLabelsProcessed=[] #List for the actual to be used labels
+    if len(xTickLabels)!=0: #If lists is not equal to zero it needs to be processed.
+        labels=len(xTickLabels) #Amount of labels to assign
+        reqLabels=width+1 #Amount of tick labels needed
+        mod=reqLabels%labels #Amount of spots after the last label
+        r=labels/(reqLabels-mod) #Ratio between labels and required labels, used to find the amount of empty labels
+        for i in range(labels): #For each input label:
+            xTickLabelsProcessed.append(xTickLabels[i]) #Append the label
+            for j in range(int(1/r)-1): #Append the required empty labels
+                xTickLabelsProcessed.append('')
+        for i in range(int(mod)):
+            xTickLabelsProcessed.append('') #Apply the final empty values.
+    ax.axes.xaxis.set_ticklabels(xTickLabelsProcessed) #assign the found list 
+
+    #Set up colors for y axis (Gates)
+    #Colors are spaced over a rainbow color map, as far apart as possible for
+    #the sake of clarity
+    colors=[]
+    cm = plt.get_cmap('gist_rainbow')
+    for i in range(height):
+        colors.append(cm(1.*i/height))    
+    
+    #Finally make the actual plot
+    for y, row in enumerate(data):
+        for x, col in enumerate(row):
+            #Get coordinators of corners for the square
+            x1 = [x, x+1]
+            y1 = np.array([y, y])
+            y2 = y1+1
+            #If the list item is NOT zero, assign it.
+            if col != 0: 
+                plt.fill_between(x1, y1, y2=y2, color=colors[y]) #Make colored square
+                plt.text((x1[0]+x1[1])/2, (y1[0]+y2[0])/2, #Place text, in center of square
+                         str(col),
+                         horizontalalignment='center',
+                         verticalalignment='center')
+    plt.show() #Victory

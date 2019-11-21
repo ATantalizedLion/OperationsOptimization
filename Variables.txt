@@ -1,4 +1,4 @@
-#List of variables and what they mean.
+#List of variables and what they mean. (For in the LP file, not the python)
 # e.g. X_1 means Plane 1 does whatever. 
 
 P1 = Number of passengers of flight 1
