@@ -6,10 +6,6 @@ Created on Thu Nov 14 16:21:08 2019
 """
 
 
-from IPython import get_ipython;   
-get_ipython().magic('reset -sf')
-
-
 #import matplotlib.pyplot as plt
 import numpy as np
 from OOFunc import generateRunFiles,timeTo5Min,plotTimeTable,Flight,Airline,Gate,Terminal,todo
@@ -53,7 +49,7 @@ fl3 = Flight("JFK26", 255, "5:55pm", "7:05pm","C",Delta)
 fl4 = Flight("JFK27", 300, "6:05pm", "7:10pm","D",BritishAirways)
 fl5 = Flight("JFK28", 255, "6:15pm", "7:15pm","A",Transavia)
 fl6 = Flight("JFK29", 20, "6:25pm", "7:20pm","D",Transavia)
-fl7 = Flight("JFK30", 255, "6:30pm", "7:30pm","C",AirFrance)
+fl7 = Flight("JFK30", 255, "6:30pm", "7:55pm","C",AirFrance)
 fl8 = Flight("JFK31", 255, "6:35pm", "7:45pm","A",Transavia)
 fl9 = Flight("JFK32", 255, "6:50pm", "8:10pm","B",KLM)
 fl10 = Flight("JFK33", 255, "6:50pm", "8:25pm","D",KLM)
@@ -78,13 +74,19 @@ for fl in Flight._registry:
 #list for binary generation
 binlist=[]
 
+
+
+
+#RUN CPlex
     #Take input flights and generate LP file
 with open("LPFiles\FirstIteration.lp","w+") as f:
-    
+
     #generate Objective
     f.write("Minimize multi-objectives\n") #Z1 = sum_i sum_k Pi*Xi,k*Dterm_k
     #f.write("Minimize objective:\n")
-    f.write("OBJ1: Priority=0 Weight=1.0 Abstol=0.0 Reltol=0.0\n")
+    f.write("OBJ1: Priority=0 Weight=1.0 Abstol=0.0 Reltol=0.0\n\n")
+    
+    todo("Implement objective function weights") 
     
     amountFlights=len(Flight._registry)
     amountGates=len(Gate._registry)
@@ -100,19 +102,16 @@ with open("LPFiles\FirstIteration.lp","w+") as f:
               
     f.write("\n")
     f.write("\n")
-    f.write("OBJ2: Priority=0 Weight=1.0 Abstol=0.0 Reltol=0.0\n")
-    
+    f.write("OBJ2: Priority=1 Weight=1.0 Abstol=0.0 Reltol=0.0\n\n")
     
     for fl in Flight._registry: #Z2 = sum_i sum_k Xi,k * Dterm_k
         for ga in Gate._registry:
-           if int(fl.gatePref)!=0:
-               f.write("-"+str(fl.gatePref))
+           if int(fl.gatePref)==ga.number:
+               f.write("-"+str(1))
                f.write(" X_I"+str(fl.number)+"_L"+str(ga.number)+" ")
            
     f.write("\n")
     f.write("\n")
-    
-    
     #generate constraints
     f.write("Subject to:\n")
     
@@ -156,85 +155,9 @@ with open("LPFiles\FirstIteration.lp","w+") as f:
     f.write("\n")
     f.write("end")
 
-#generate Objective
-f.write("Minimize multi-objectives\n") #Z1 = sum_i sum_k Pi*Xi,k*Dterm_k
-#f.write("Minimize objective:\n")
-f.write("OBJ1: Priority=0 Weight=1.0 Abstol=0.0 Reltol=0.0\n\n")
 
 
-amountFlights=len(Flight._registry)
-amountGates=len(Gate._registry)
-
-for fl in Flight._registry:
-    for ga in Gate._registry:
-       f.write(str(fl.passengers*ga.distance)) 
-       f.write(" X_I"+str(fl.number)+"_L"+str(ga.number))
-       if int(fl.number)!=int(amountFlights) or int(ga.number)!=int(amountGates):
-          f.write(" + ") 
-       else:
-          f.write("")
-          
-f.write("\n")
-f.write("\n")
-f.write("OBJ2: Priority=1 Weight=1.0 Abstol=0.0 Reltol=0.0\n\n")
-
-#ff uitgecomment om te testen
-for fl in Flight._registry: #Z2 = sum_i sum_k Xi,k * Dterm_k
-    for ga in Gate._registry:
-       if int(fl.gatePref)==ga.number:
-           f.write("-"+str(1))
-           f.write(" X_I"+str(fl.number)+"_L"+str(ga.number)+" ")
-       
-f.write("\n")
-f.write("\n")
-todo("Implement objectives") #Tommy
-
-#generate constraints
-f.write("Subject to:\n")
-
-#Make all X_I_L binary, and have all flights require a gate
-for fl in Flight._registry:
-    for ga in Gate._registry:
-        curVar=str("X_I"+str(fl.number)+"_L"+str(ga.number))
-        f.write(curVar)
-        if int(ga.number)!=int(amountGates):
-            f.write(" + ") 
-        else:
-            f.write(" = 1 \n")            
-        binlist.append(curVar) #Make binary
-
-#Time overlap constraint:        
-#For all overlapping flights, gates can only have one flight assigned:
-for i in range(len(timemat)):
-    for j in range(i):
-        if timemat[i,j]==1:
-            flight1=Flight._registry[i]
-            flight2=Flight._registry[j]
-            for ga in Gate._registry:
-                flight1var=str("X_I"+str(flight1.number)+"_L"+str(ga.number))
-                flight2var=str("X_I"+str(flight2.number)+"_L"+str(ga.number))
-                f.write(flight1var + " + " + flight2var + " <= 1 \n") 
-            
-
-#Gate constrain 2: # ensures flights after 6 pm are not in B or C 
-todo("Implement GC2") 
-
-#Form factor constraint: (Compliance of a/c formfactor to bay/gate) 
-todo("Implement FFC") #Tommy
-
-f.write("\n")
-#Make parameters binary as needed
-f.write("binary\n")
-for i in binlist:
-    f.write(i+" ")
-#write end file
-f.write("\n")
-f.write("end")
-f.close
-
-
-
-#RUN CPlex
+#RUN CPlex:
 sol = generateRunFiles("FirstIteration.lp")   #Returns solution filepath
 
 lines = [line.rstrip('\n') for line in open(sol)]

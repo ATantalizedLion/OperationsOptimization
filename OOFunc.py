@@ -20,9 +20,9 @@ def timeToMin(Time):
         #add 12 hours to time if pm
         converted+=12*60
         #Get rid of am and pm since they have been used
-        numTime=Time.strip('am')
-        numTime=numTime.strip('pm')
-        numTime=numTime.strip(' ')
+    numTime=Time.strip('am')
+    numTime=numTime.strip('pm')
+    numTime=numTime.strip(' ')
     if Time.find(':')!=-1:
         # ':' is found.
         # split time in hh:mm format into seperate items
