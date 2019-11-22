@@ -9,7 +9,7 @@ Created on Tue Nov 19 14:27:18 2019
 from os import getcwd,remove
 
 def todo(string):
-    return #print(string)
+    return print(string)
 
 def timeToMin(Time):
     #Takes input and converts it to minutes.
@@ -35,7 +35,7 @@ def timeToMin(Time):
             print('error in timeToMin split')
             return "error in timeToMin split"
     else: 
-        return int(numTime)*60
+        converted+=int(numTime)*60
     return converted
 
 def timeTo5Min(Time):
@@ -111,13 +111,13 @@ class Airline(object):
         _registry = [] #Keep track of all instances
         def __init__(self,name,gatePref):
             self._registry.append(self) #Add terminal to list of terminals
-            self.name=name #Give airliner a name A,B,C...
-            self.number=len(Airline._registry) #Give terminal a number
-            self.gatePref = gatePref #what gate does the airliner prefer
+            self.name=name #Give airline a name A,B,C...
+            self.number=len(Airline._registry) #Give airline a number
+            self.gatePref = gatePref #what gate does the airline prefer
             
 class Flight(object):
         _registry = [] #Keep track of all instances
-        def __init__(self,identifier,passengers,arrivalTime,departureTime,formFactor,airline):
+        def __init__(self,identifier,passengers,arrivalTime,departureTime,formFactor,airline,assignedGate=0):
             self._registry.append(self) #Add this flight to list of flights
             self.number=len(Flight._registry) #Give flight a number
             self.identifier = identifier #Store the flight code of the aircraft
@@ -128,18 +128,22 @@ class Flight(object):
             self.airline = airline #What airline does the aircraft belong to as an object
             
             #timeSlotsPer5Min
-            self.timeSlotBegin = str(timeTo5Min(arrivalTime))
-            self.timeSlotEnd = str(timeTo5Min(arrivalTime))
-            self.timeSlotBeginBuffer = str(timeTo5Min(arrivalTime)-2)
-            self.timeSlotEndBuffer = str(timeTo5Min(arrivalTime)+2)
+            self.timeSlotBegin = timeTo5Min(arrivalTime)
+            self.timeSlotEnd = timeTo5Min(departureTime)
+            self.timeSlotBeginBuffer = timeTo5Min(arrivalTime)-2
+            self.timeSlotEndBuffer = timeTo5Min(departureTime)+2
             
-            #Get gatepref
+            #Get gatepref of related airline
             if airline.gatePref != 0:
                 self.gatePref = airline.gatePref.number
             else:
                 self.gatePref = 0
+                
+        #Assign a gate:
+        def assignGate(self,gate):
+            self.assignedGate=gate 
 
-def plotTimeTable(data, grid=0, xTickLabels=[],yTicks=True):
+def plotTimeTable(data, grid=0, xTickLabels=[],yTickLabels=True):
     import matplotlib.pyplot as plt
     import numpy as np
     #Plot the input data [an array with rows being the time gates and the cols
@@ -177,7 +181,7 @@ def plotTimeTable(data, grid=0, xTickLabels=[],yTicks=True):
         ax.set_yticks(np.arange(0,height+1, 1)) #Set Y tick spacing
         plt.grid(color='black') #Make lines less ugly
     
-    if yTicks==True:
+    if yTickLabels==True:
         yTicksList=[]
         for i in range(height):
             yTicksList.append("Gate "+str(i+1))
@@ -192,7 +196,7 @@ def plotTimeTable(data, grid=0, xTickLabels=[],yTicks=True):
         r=labels/(reqLabels-mod) #Ratio between labels and required labels, used to find the amount of empty labels
         for i in range(labels): #For each input label:
             xTickLabelsProcessed.append(xTickLabels[i]) #Append the label
-            for j in range(int(1/r)-1): #Append the required empty labels
+            for j in range(int(1/r)+1): #Append the required empty labels
                 xTickLabelsProcessed.append('')
         for i in range(int(mod)):
             xTickLabelsProcessed.append('') #Apply the final empty values.

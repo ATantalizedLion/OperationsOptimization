@@ -5,9 +5,14 @@ Created on Thu Nov 14 16:21:08 2019
 @author: Daan
 """
 
+
+from IPython import get_ipython;   
+get_ipython().magic('reset -sf')
+
+
 #import matplotlib.pyplot as plt
 import numpy as np
-from OOFunc import generateRunFiles,Flight,Airline,Gate,Terminal,todo
+from OOFunc import generateRunFiles,timeTo5Min,plotTimeTable,Flight,Airline,Gate,Terminal,todo
 import xml.etree.ElementTree as ET
 
 #Terminal(name,openEvening,distance)
@@ -73,15 +78,89 @@ for fl in Flight._registry:
 #list for binary generation
 binlist=[]
 
-#Take input flights and generate LP file
-f = open("LPFiles\FirstIteration.lp","w+")    
+    #Take input flights and generate LP file
+with open("LPFiles\FirstIteration.lp","w+") as f:
+    
+    #generate Objective
+    f.write("Minimize multi-objectives\n") #Z1 = sum_i sum_k Pi*Xi,k*Dterm_k
+    #f.write("Minimize objective:\n")
+    f.write("OBJ1: Priority=0 Weight=1.0 Abstol=0.0 Reltol=0.0\n")
+    
+    amountFlights=len(Flight._registry)
+    amountGates=len(Gate._registry)
+    
+    for fl in Flight._registry:
+        for ga in Gate._registry:
+           f.write(str(fl.passengers*ga.distance)) 
+           f.write(" X_I"+str(fl.number)+"_L"+str(ga.number))
+           if int(fl.number)!=int(amountFlights) or int(ga.number)!=int(amountGates):
+              f.write(" + ") 
+           else:
+              f.write("")
+              
+    f.write("\n")
+    f.write("\n")
+    f.write("OBJ2: Priority=0 Weight=1.0 Abstol=0.0 Reltol=0.0\n")
+    
+    
+    for fl in Flight._registry: #Z2 = sum_i sum_k Xi,k * Dterm_k
+        for ga in Gate._registry:
+           if int(fl.gatePref)!=0:
+               f.write("-"+str(fl.gatePref))
+               f.write(" X_I"+str(fl.number)+"_L"+str(ga.number)+" ")
+           
+    f.write("\n")
+    f.write("\n")
+    
+    
+    #generate constraints
+    f.write("Subject to:\n")
+    
+    #Make all X_I_L binary, and have all flights require a gate
+    for fl in Flight._registry:
+        for ga in Gate._registry:
+            curVar=str("X_I"+str(fl.number)+"_L"+str(ga.number))
+            f.write(curVar)
+            if int(ga.number)!=int(amountGates):
+                f.write(" + ") 
+            else:
+                f.write(" = 1 \n")            
+            binlist.append(curVar) #Make binary
+    
+    #Time overlap constraint:        
+    #For all overlapping flights, gates can only have one flight assigned:
+    for i in range(len(timemat)):
+        for j in range(i):
+            if timemat[i,j]==1:
+                flight1=Flight._registry[i]
+                flight2=Flight._registry[j]
+                for ga in Gate._registry:
+                    flight1var=str("X_I"+str(flight1.number)+"_L"+str(ga.number))
+                    flight2var=str("X_I"+str(flight2.number)+"_L"+str(ga.number))
+                    f.write(flight1var + " + " + flight2var + " <= 1 \n") 
+                
+    
+    #Gate constrain 2: # ensures flights after 6 pm are not in B or C 
+    todo("Implement GC2") 
+    
+    #Form factor constraint: (Compliance of a/c formfactor to bay/gate) 
+    todo("Implement FFC") #Tommy
+    
+    f.write("\n")
+    #Make parameters binary as needed
+    
+    f.write("binary\n")
+    for i in binlist:
+        f.write(i+" ")
+    #write end file
+    f.write("\n")
+    f.write("end")
 
 #generate Objective
 f.write("Minimize multi-objectives\n") #Z1 = sum_i sum_k Pi*Xi,k*Dterm_k
 #f.write("Minimize objective:\n")
 f.write("OBJ1: Priority=0 Weight=1.0 Abstol=0.0 Reltol=0.0\n\n")
 
-todo("Implement objective function weights") 
 
 amountFlights=len(Flight._registry)
 amountGates=len(Gate._registry)
@@ -164,9 +243,9 @@ lines = [line.strip() for line in lines]
 if lines[6].split('=')[0]=='objectiveValue':
     objectiveValue=float(lines[6].split('=')[1].strip('"'))
 else:
-    print("ERROR: objectiveValue not at expect location!")
+    print("ERROR: objectiveValue not at expected location!")
 
-#Import data
+#Import data:
 tree = ET.parse(sol)
 root = tree.getroot()
 
@@ -180,19 +259,54 @@ for child in root[3]:
 offset = solNameList.index("X_I1_L1")
 a = np.zeros((amountFlights,amountGates))
 b = np.empty((amountFlights,amountGates), dtype=object)
-for i in range(amountFlights):
-    for j in range(amountGates):
+for fl in Flight._registry:
+    for ga in Gate._registry:
+        i = fl.number-1
+        j = ga.number-1
         fgi=offset+i*amountGates+j #flightGateIndex
         a[i,j]=solValueList[fgi]
         b[i,j]=solNameList[fgi] #For verification
+        if abs(int(solValueList[fgi]))!=0:
+            fl.assignGate(ga)
+            
 
 print("Objective Value is:"+str(objectiveValue))
 
 #Show dataset
 todo("Implement dataset mooie grafiekjes ") #Boris
 
-#Show solution
-todo("Implement solution mooie grafiekjes - using existing function")
+#Get timeTableMatrix
+timeStart="5pm"
+timeEnd="11pm"
+tStart=timeTo5Min(timeStart)
+tEnd=timeTo5Min(timeEnd)
+dTime=tEnd-tStart
+timeTableMatrix=np.zeros((amountGates,dTime),dtype=object)
+for fl in Flight._registry:
+    t1=fl.timeSlotBegin
+    t2=fl.timeSlotEnd
+    dt=t2-t1
+    t1=t1-tStart
+    t2=t2-tStart
+    ga=fl.assignedGate
+    gaNum=ga.number
+    gaInd=gaNum-1
+    if t2 > dTime:
+        t2=dTime
+    if t1 <= 0 and t2 <= 0:
+        do="nothing"
+    elif t1 < 0 and t2 >= 0: 
+        #for assigned gate, assign flight identifier to gate
+        #from slot 0 to slot t2
+        for i in range(t2):
+            timeTableMatrix[gaInd,i]=fl.identifier
+    else: #if t1 >0, t2>0
+        #for assigned gate, assign flight identifier to gate
+        #from slot 1 to slot t2
+        for i in range(t1,t2):
+            timeTableMatrix[gaInd,i]=fl.identifier
+#plotTimeTable
+plotTimeTable(timeTableMatrix,1,xTickLabels=["5pm","6pm","7pm","8pm","9pm","10pm","11pm"],yTickLabels=True)
 
 
 
