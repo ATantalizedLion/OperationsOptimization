@@ -8,8 +8,12 @@ Created on Thu Nov 14 16:21:08 2019
 
 #import matplotlib.pyplot as plt
 import numpy as np
-from OOFunc import generateRunFiles,timeTo5Min,plotTimeTable,Flight,Airline,Gate,Terminal,todo
+from OOFunc import generateRunFiles,timeTo5Min,getTimetableMatrix,plotTimetable,Flight,Airline,Gate,Terminal,Bay,todo
 import xml.etree.ElementTree as ET
+
+todo("Make data set better") #e.g. add corresponding sizes to aircraft
+todo("Make bays size and distances correct")
+
 
 #Terminal(name,openEvening,distance)
 t1 = Terminal("A",True,250)
@@ -19,8 +23,8 @@ t4 = Terminal("D",False,100)
 
 #Gate(terminal,domesticFlight,distanceToTerminal)
 g1 = Gate(t1,True,100)
-g2 = Gate(t1,True,100)
-g3 = Gate(t1,False,300)
+g2 = Gate(t1,False,100)
+g3 = Gate(t1,True,300)
 g4 = Gate(t1,False,300)
 
 g5 = Gate(t2,False,100)
@@ -33,6 +37,30 @@ g10 = Gate(t3,False,700)
 
 g11 = Gate(t4,False,80)
 g12 = Gate(t4,False,380)
+
+#Bay(linkedGates,distLinkedGates,formFactor)
+b1 = Bay([g1,g3],[100,150],"B")
+b2 = Bay([g1,g3],[150,100],"B")
+b3 = Bay([g2,g4],[100,150],"B")
+b4 = Bay([g2,g4],[150,100],"B")
+
+b5 = Bay([g5,g6],[150,100],"A")
+b6 = Bay([g5,g6],[100,150],"A")
+b7 = Bay([g6,g7],[150,100],"A")
+b8 = Bay([g6,g7],[100,150],"A")
+
+b9  = Bay([g8,g9],[150,100],"A")
+b10 = Bay([g8,g9],[100,150],"A")
+b11 = Bay([g9,g10],[150,100],"A")
+b12 = Bay([g9,g10],[100,150],"A")
+
+b13 = Bay([g11],[100],"C")
+b14 = Bay([g11,g12],[100,100],"C")
+b15 = Bay([g11,g12],[100,100],"C")
+b16 = Bay([g12],[100],"C")
+
+#remote bays 
+#b20 = Bay(Gate._registry,[])
 
 #Airliner(name,gatePref)
 AirFrance   = Airline("AirFrance",g5)
@@ -144,7 +172,11 @@ with open("LPFiles\FirstIteration.lp","w+") as f:
     
     #Form factor constraint: (Compliance of a/c formfactor to bay/gate) 
     todo("Implement FFC") #Tommy
-    
+    todo("Figure out formfactors that are used for aircraft in airport")    
+    todo("Maybe make it A = wide body, B = reg bod, C= narrow")
+    todo("An A bay would be usable by 1 A, 1B or 2C") #Cool but hard to implement
+    todo("A  B bay would be usable by 0 A, 1B or 1C")
+    todo("A  C bay would be usable by 0 A, 0B or 1C")
     f.write("\n")
     #Make parameters binary as needed
     
@@ -198,42 +230,16 @@ print("Objective Value is:"+str(objectiveValue))
 #Show dataset
 todo("Implement dataset mooie grafiekjes ") #Boris
 
-#Get timeTableMatrix
-timeStart="5pm"
-timeEnd="11pm"
-tStart=timeTo5Min(timeStart)
-tEnd=timeTo5Min(timeEnd)
-dTime=tEnd-tStart
-timeTableMatrix=np.zeros((amountGates,dTime),dtype=object)
-for fl in Flight._registry:
-    t1=fl.timeSlotBegin
-    t2=fl.timeSlotEnd
-    dt=t2-t1
-    t1=t1-tStart
-    t2=t2-tStart
-    ga=fl.assignedGate
-    gaNum=ga.number
-    gaInd=gaNum-1
-    if t2 > dTime:
-        t2=dTime
-    if t1 <= 0 and t2 <= 0:
-        do="nothing"
-    elif t1 < 0 and t2 >= 0: 
-        #for assigned gate, assign flight identifier to gate
-        #from slot 0 to slot t2
-        for i in range(t2):
-            timeTableMatrix[gaInd,i]=fl.identifier
-    else: #if t1 >0, t2>0
-        #for assigned gate, assign flight identifier to gate
-        #from slot 1 to slot t2
-        for i in range(t1,t2):
-            timeTableMatrix[gaInd,i]=fl.identifier
-#plotTimeTable
-plotTimeTable(timeTableMatrix,1,xTickLabels=["5pm","6pm","7pm","8pm","9pm","10pm","11pm"],yTickLabels=True)
+t=["5pm","6pm","7pm","8pm","9pm"]
 
+#getTimetableMatrix(timeStart,timeEnd,amountGates)
+timetableMatrix=getTimetableMatrix(t[0],t[-1],amountGates)
+#plotTimeTable
+plotTimetable(timetableMatrix,1,xTickLabels=t,xTickSpacing=11,yTickLabels=True)
 
 
 #Bussen bij gate X, als bus er is, telt afstand minder zwaar
 todo("Implement showoff")
 
-todo("Implement bays?") #Daan
+todo("Implement separate bay and gate timing?") 
+        #e.g. 20 min on departure and 10 on arrival for gate, full time for bay.
