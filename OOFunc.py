@@ -56,9 +56,15 @@ def generateRunFiles(lpFileName):
     BatPath=filepath+"\\"+lpFileName+"Run.bat"
     SOLPath=filepath+"\\"+lpFileName+"SOL.SOL"
     LpPath =filepath+"\\"+lpFileName+".lp"
+    logPath=getcwd()+"\cplex.log"
     #Delete sol file before running:
     try:
         remove(SOLPath)
+    except:
+        removed=1
+    #Delete log file before running:
+    try:
+        remove(logPath)
     except:
         removed=1
     #generate CCF:
@@ -106,7 +112,7 @@ class Gate(object):
 
 class Bay(object):
         _registry = [] #Keep track of all instances
-        def __init__(self,linkedGates,linkedGatesDistances,formFactor,serviceBay=False,remoteBay=False):
+        def __init__(self,linkedGates,linkedGatesDistances,formFactor,refuelBay=True,serviceBay=False,remoteBay=False):
             self._registry.append(self) #Add gate to the list of gates
             self.number = len(Bay._registry) #Give Bay a number
             self.linkedGates = linkedGates #All gates linked to this one.
@@ -114,6 +120,7 @@ class Bay(object):
             self.formFactor = formFactor
             self.serviceBay = serviceBay #Whether or not bay can perform any servicing
             self.remoteBay = remoteBay #requires busses and other resources
+            self.refuelBay = refuelBay #wheteher or not the gate can refuel aircraft
             
 class Airline(object):
         _registry = [] #Keep track of all instances
