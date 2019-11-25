@@ -11,7 +11,7 @@ import numpy as np
 from OOFunc import generateRunFiles,timeTo5Min,getTimetableMatrix,plotTimetable,Flight,Airline,Gate,Terminal,Bay,todo
 import xml.etree.ElementTree as ET
 
-todo("Make data set better") #e.g. add corresponding sizes to aircraft
+todo("Make data set better") #e.g. add corresponding sizes to aircraft #Random dataset?
 todo("Make bays size and distances correct")
 
 
@@ -66,9 +66,9 @@ b16 = Bay([g12],[100],"C")
 AirFrance   = Airline("AirFrance",g5)
 KLM = Airline("KLM",g8)
 Delta = Airline("Delta",g11)
-BritishAirways=Airline("British Airways",0)
-Transavia=Airline("Transavia",0)
-EasyJet = Airline("EasyJet",0)
+BritishAirways=Airline("British Airways")
+Transavia=Airline("Transavia")
+EasyJet = Airline("EasyJet")
 
 #Flight(identifier,passengers,arrivalTime,departureTime,formFactor,airliner)
 fl1 = Flight("JFK23", 250, "5:15pm","7pm","A",KLM)
@@ -99,7 +99,7 @@ for fl in Flight._registry:
         j += 1
     i += 1
 
-    
+#intialize useful Variables
 amountFlights=len(Flight._registry)
 amountGates=len(Gate._registry)
 amountBays=len(Bay._registry)
@@ -153,7 +153,7 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
         for bay in Bay._registry:
            for i in range(len(bay.linkedGates)):
                ga=bay.linkedGates[i]
-               gaDist=bay.linkedGatesDistances[i]
+               gaDist=bay.linkedGatesDistances[i] 
                f.write(str(fl.passengers*gaDist))
                f.write(" X_I"+str(fl.number)+"_K"+str(bay.number)+"_L"+str(ga.number))
                binlist.append("X_I"+str(fl.number)+"_K"+str(bay.number)+"_L"+str(ga.number))
@@ -176,13 +176,19 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
                 curXIKL=str("X_I"+str(fl.number)+"_K"+str(bay.number)+"_L"+str(ga.number))
                 curXIK=str("X_I"+str(fl.number)+"_K"+str(bay.number))
                 curXIL=str("X_I"+str(fl.number)+"_L"+str(ga.number))
+
+#               Either or constraints, as is depicted in slides.    
+#               This ensures 
+#                
+#               x1 must be 1 for x2 to be 1 
+#               -x1+x2<=0
+#               x1+x2-y1<=1                
                 
-#                x1 must be 1 for x2 to be 1 
-#                -x1+x2<=0
-#                x1+x2-y1<=1
-                
+#               This ensures that if X_I_K is 1, X_I_K_L is 1, and vice versa
                 f.write("-"+curXIKL+" +"+curXIK+"<=0\n")
                 f.write( curXIKL+" +"+curXIK+"-" + curXIKL+"_"+str(i)+ "<=1\n")
+                
+#               This does the same for X_I_L
                 f.write("-"+curXIKL+" +"+curXIL+"<=0\n")
                 f.write( curXIKL+" +"+curXIL+"-" + curXIKL+"_"+str(i)+"2 <=1\n")
 
@@ -199,15 +205,15 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
                 f.write(" = 1 \n")     
                 
 #    #Have all flights require a gate for full stay
-#    for fl in Flight._registry:
-#        for ga in Gate._registry:
-#            curVar=str("X_I"+str(fl.number)+"_K"+str(ga.number))
-#            binlist.append(curVar)
-#            f.write(curVar)
-#            if int(ga.number)!=int(amountGates):
-#                f.write(" + ") 
-#            else:
-#                f.write(" = 1 \n")            
+    for fl in Flight._registry:
+        for ga in Gate._registry:
+            curVar=str("X_I"+str(fl.number)+"_L"+str(ga.number))
+            binlist.append(curVar)
+            f.write(curVar)
+            if int(ga.number)!=int(amountGates):
+                f.write(" + ") 
+            else:
+                f.write(" = 1 \n")            
     
     #Time overlap constraint:        
     #For all overlapping flights, bays can only have one flight assigned:
@@ -250,6 +256,7 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
 
 
 
+
 #RUN CPlex:
 sol = generateRunFiles("SecondIteration.lp")   #Returns solution filepath
 
@@ -258,48 +265,66 @@ lines = [line.strip() for line in lines]
 
 if lines[6].split('=')[0]=='objectiveValue':
     objectiveValue=float(lines[6].split('=')[1].strip('"'))
-    print(objectiveValue)
+    print("Objective value is",objectiveValue)
 else:
     print("ERROR: objectiveValue not at expected location!")
-#
-##Import data:
-#tree = ET.parse(sol)
-#root = tree.getroot()
-#
-#solNameList=[]
-#solValueList=[]
-#for child in root[3]:
-#    locals().update(child.attrib) #name,value,index
-#    solNameList.append(name)
-#    solValueList.append(value)
-#
-#offset = solNameList.index("X_I1_L1")
-#a = np.zeros((amountFlights,amountGates))
-#b = np.empty((amountFlights,amountGates), dtype=object)
-#for fl in Flight._registry:
-#    for ga in Gate._registry:
-#        i = fl.number-1
-#        j = ga.number-1
-#        fgi=offset+i*amountGates+j #flightGateIndex
-#        a[i,j]=solValueList[fgi]
-#        b[i,j]=solNameList[fgi] #For verification
-#        if abs(int(solValueList[fgi]))!=0:
-#            fl.assignGate(ga)
-#            
-#print("Objective Value is:"+str(objectiveValue))
-#
-##Show dataset
-#todo("Implement dataset mooie grafiekjes ") #Boris
-#t=["5pm","6pm","7pm","8pm","9pm"]
-#
-##getTimetableMatrix(timeStart,timeEnd,amountGates)
-#timetableMatrix=getTimetableMatrix(t[0],t[-1],amountGates)
-##plotTimeTable
-#plotTimetable(timetableMatrix,1,xTickLabels=t,xTickSpacing=11,yTickLabels=True)
-#
-#
-##Bussen bij gate X, als bus er is, telt afstand minder zwaar
-#todo("Implement showoff")
-#
-#todo("Implement separate bay and gate timing?") 
-#        #e.g. 20 min on departure and 10 on arrival for gate, full time for bay.
+
+#Import data:
+tree = ET.parse(sol)
+root = tree.getroot()
+
+solNameList=[]
+solValueList=[]
+for child in root[3]:
+    locals().update(child.attrib) #name,value,index
+    solNameList.append(name)
+    solValueList.append(value)
+
+
+#retrieve X_I_L, X_I_K from solution, send to objects
+a = np.zeros((amountFlights,amountGates))
+b = np.empty((amountFlights,amountGates), dtype=object)        
+c = np.zeros((amountFlights,amountBays))
+d = np.empty((amountFlights,amountBays), dtype=object)        
+for fl in Flight._registry:
+    for ga in Gate._registry:
+        i = fl.number-1
+        j = ga.number-1
+        curVar=str("X_I"+str(fl.number)+"_L"+str(ga.number))
+        findVar=solNameList.index(curVar)
+        a[i,j]=solValueList[findVar]
+        b[i,j]=solNameList[findVar]
+        if abs(int(solValueList[findVar]))!=0:
+            fl.assignGate(ga)
+            
+    for bay in Bay._registry:
+        i = fl.number-1
+        j = ga.number-1
+        curVar=str("X_I"+str(fl.number)+"_L"+str(bay.number))
+        findVar=solNameList.index(curVar)
+        c[i,j]=solValueList[findVar]
+        d[i,j]=solNameList[findVar]
+        if abs(int(solValueList[findVar]))!=0:
+            fl.assignBay(bay)
+
+
+#Show dataset
+todo("Implement dataset mooie grafiekjes ") #Boris
+
+
+#Grafiekje solution:
+t=["5pm","6pm","7pm","8pm","9pm"]
+
+#getTimetableMatrix(timeStart,timeEnd,amountGates)
+timetableMatrix=getTimetableMatrix(t[0],t[-1],amountGates)
+#plotTimeTable
+plotTimetable(timetableMatrix,1,xTickLabels=t,xTickSpacing=11,yTickLabels=True)
+
+
+#Bonus:
+
+#Bussen bij gate X, als bus er is, telt afstand minder zwaar
+todo("Implement busje")
+
+        #e.g. 20 min on departure and 10 on arrival for gate, full time for bay.
+todo("Eventueel towing implementen (Naar andere bay als dat goedkoper is)")

@@ -124,11 +124,11 @@ class Bay(object):
             
 class Airline(object):
         _registry = [] #Keep track of all instances
-        def __init__(self,name,gatePref):
+        def __init__(self,name,gatePref=0):
             self._registry.append(self) #Add terminal to list of terminals
             self.name=name #Give airline a name A,B,C...
             self.number=len(Airline._registry) #Give airline a number
-            self.gatePref = gatePref #what gate does the airline prefer
+            self.gatePref = gatePref #what gate does the airline prefer (default none)
             
 class Flight(object):
         _registry = [] #Keep track of all instances
@@ -157,6 +157,9 @@ class Flight(object):
         #Assign a gate:
         def assignGate(self,gate):
             self.assignedGate=gate 
+        #Assign a Bay
+        def assignBay(self,bay):
+            self.assignedBay=bay 
 
 def plotTimetable(data, grid=0, xTickLabels=[], xTickSpacing=0,yTickLabels=True):
     import matplotlib.pyplot as plt
