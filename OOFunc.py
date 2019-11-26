@@ -170,13 +170,10 @@ def plotTimetable(data, grid=0, xTickLabels=[], xTickSpacing=0,yTickLabels=True)
     #grid is a boolean deciing whether or not grid lines are shown
     #
     #xTickLabels is a list of labels to be distributed equally over the Xaxis
-    #according to their ratio and modulus.
+    #according to xTickSpacing.
     #e.g. a dataset with 7 columns and timesteps of 15 minutes starting at 12pm
-    #would end at 1:45pm, giving xTickLabels=["12pm","1am"] as input would give
-    #the proper result. 
-    #So if the first label is the time at which your dataset starts and you simply
-    #include all following labels that are still within your data set the program
-    #will take care of the rest :)
+    #would end at 1:45pm, giving xTickLabels=["12pm","1pm"] as input with a
+    #tickspacing of 3 would give the proper result.
     #
     #yTicks adds ticks with Gate 1, 2 etc. to the side, requires Grid=1
     #======================================================

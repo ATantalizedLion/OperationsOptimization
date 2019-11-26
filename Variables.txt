@@ -6,8 +6,10 @@ X11 = Decision variable flight 1 gate 1
 D11 = Distance terminal 1 and gate 1 
 PREF11 = Preference airline flight 1 gate 1
 
-
 # being a flight number or gate identifier
+I being a flight
 L Being gate A,B,C,D
-
-X_I##_L##    flight X at gate L
+K Being bay 1,2,3
+X_I##_L##    flight I at gate L
+X_I##_K##    flight I at bay K
+X_I_K_L      flight bay gate combo 

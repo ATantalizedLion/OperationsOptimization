@@ -223,8 +223,8 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
                 flight1=Flight._registry[i]
                 flight2=Flight._registry[j]
                 for bay in Bay._registry:
-                    flight1var=str("X_I"+str(flight1.number)+"_L"+str(bay.number))
-                    flight2var=str("X_I"+str(flight2.number)+"_L"+str(bay.number))
+                    flight1var=str("X_I"+str(flight1.number)+"_K"+str(bay.number))
+                    flight2var=str("X_I"+str(flight2.number)+"_K"+str(bay.number))
                     f.write(flight1var + " + " + flight2var + " <= 1 \n") 
                 
     
@@ -300,7 +300,7 @@ for fl in Flight._registry:
     for bay in Bay._registry:
         i = fl.number-1
         j = ga.number-1
-        curVar=str("X_I"+str(fl.number)+"_L"+str(bay.number))
+        curVar=str("X_I"+str(fl.number)+"_K"+str(bay.number))
         findVar=solNameList.index(curVar)
         c[i,j]=solValueList[findVar]
         d[i,j]=solNameList[findVar]
@@ -313,7 +313,8 @@ todo("Implement dataset mooie grafiekjes ") #Boris
 
 
 #Grafiekje solution:
-t=["5pm","6pm","7pm","8pm","9pm"]
+#t=["5pm","6pm","7pm","8pm","9pm"]
+t=["6pm","7pm","8pm"]
 
 #getTimetableMatrix(timeStart,timeEnd,amountGates)
 timetableMatrix=getTimetableMatrix(t[0],t[-1],amountGates)
