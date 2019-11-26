@@ -11,7 +11,7 @@ import numpy as np
 import random
 
 def todo(string):
-    return# print(string)
+    return print(string)
 
 def timeToMin(Time):
     #Takes input and converts it to minutes.
@@ -30,14 +30,23 @@ def timeToMin(Time):
         # split time in hh:mm format into seperate items
         spl=numTime.split(':')
         if len(spl) == 2:
-            converted+=int(spl[0])*60+int(spl[1])
+            if spl[0] == 12:
+                converted+=int(spl[1])
+            else:
+                converted+=int(spl[0])*60+int(spl[1])
         elif len(spl) == 1:
-            converted+=int(spl[0])*60
+            if int(spl) == 12:
+                converted += 0
+            else:
+                converted+=int(spl[0])*60
         else:
             print('error in timeToMin split')
             return "error in timeToMin split"
     else: 
-        converted+=int(numTime)*60
+        if int(numTime)==12:
+            converted += 0
+        else:
+            converted+=int(numTime)*60
     return converted
 
 def timeTo5Min(Time):
@@ -46,6 +55,19 @@ def timeTo5Min(Time):
     #spaces do not matter
     converted=timeToMin(Time)
     return int(converted/5)
+
+def minToTime(minutes):
+    h = int(minutes/60)
+    m = minutes - h*60
+    if len(str(m)) == 1:
+        mm = '0'+str(m)
+    else:
+        mm = m
+    converted = str(h)+":"+str(mm)
+    return converted
+
+def fiveMinToTime(fiveMin):
+    return minToTime(fiveMin*5)
 
 def generateRunFiles(lpFileName):
     
@@ -149,6 +171,11 @@ class Flight(object):
             self.timeSlotEnd = timeTo5Min(departureTime)
             self.timeSlotBeginBuffer = timeTo5Min(arrivalTime)-2
             self.timeSlotEndBuffer = timeTo5Min(departureTime)+2
+            
+            #for arrival emptying the aircraft is taken to take 15 minutes
+            self.timeSlotEndArr = self.timeSlotBegin + 3 #End of arrival/end of boarding time slot
+            #boarding is taken to take 30 minutes
+            self.timeSlotStartDep = self.timeSlotEnd - 6 #Start of boarding
             
             #Get gatepref of related airline
             if airline.gatePref != 0:
@@ -278,3 +305,78 @@ def getTimetableMatrix(timeStart,timeEnd,amountGates):
             for i in range(t1,t2):
                 timeTableMatrix[gaInd,i]=fl.identifier
     return timeTableMatrix
+
+
+class Airport(object): #for randomizer
+        _registry = [] #Keep track of all instances
+        def __init__(self,name,shortName,distanceCategory=3):
+            self._registry.append(self) #Add gate to the list of gates
+            self.number = len(Airport._registry) #Give City a number
+            self.name   = name 
+            self.shortName = shortName
+            self.distanceCategory = distanceCategory
+                #0 = Domestic (size C (small)) 
+                #1 = Domestic (size B (medium))
+                #2 = International nearby (B-C)
+                #3 = International med dist (A-B-C)
+                #4 = International far (A-B)
+                #5 = Intercontinental, A only (large)
+            if distanceCategory <= 1:
+                self.domestic = True
+            else:
+                self.domestic = False
+
+def getFlights(flightsWanted,timeStart,timeEnd):
+    #generates X amounts of flights from all loaded airports to the destination airport. 
+    #Does so with arrival time between timeStart and timeEnd
+    timeStart = timeTo5Min(timeStart)
+    timeEnd = timeTo5Min(timeEnd)
+    for i in range(flightsWanted):
+    #    random.seed('givemeflights')
+        air = Airport._registry[random.randint(0,len(Airport._registry)-1)]
+        flName=str(air.shortName+str(i+1)) #retrieve name from airport object:
+        flAirline=  Airline._registry[random.randint(0,len(Airline._registry)-1)]
+        #Size categories defined in airport class above
+        if air.distanceCategory==0:
+            flFF = "C"
+        if air.distanceCategory==1:
+            flFF = "B"
+        if air.distanceCategory==2:
+            r = random.randint(0,1)
+            if r == 0:
+                flFF = "B"
+            else: 
+                flFF = "C"
+        if air.distanceCategory==3:
+            r = random.randint(0,2)
+            if r == 0:
+                flFF = "A"
+            elif r ==1: 
+                flFF = "B"
+            else: 
+                flFF = "C"
+        if air.distanceCategory==4:
+            r = random.randint(0,1)
+            if r == 0:
+                flFF = "A"
+            else: 
+                flFF = "B" 
+        if air.distanceCategory==5:
+            flFF = "A"
+            
+    #    get amount of passengers 
+        if flFF == "A": #300-450
+            flPass = random.randrange(300,450)
+        if flFF == "B": #150-300
+            flPass = random.randrange(150,300)
+        if flFF == "C": #50-150
+            flPass = random.randrange(50,150)
+        
+        #work in 5 min slots
+    
+        flArr = random.randrange(timeStart,timeEnd)
+        flDep = flArr + random.randint(4,24) # stays 20 to 120 minutes
+    
+        Flight(flName, flPass, fiveMinToTime(flArr), fiveMinToTime(flDep), flFF, flAirline)
+    return
+

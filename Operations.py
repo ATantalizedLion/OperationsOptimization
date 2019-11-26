@@ -5,16 +5,26 @@ Created on Thu Nov 14 16:21:08 2019
 @author: Daan
 """
 
-
 #import matplotlib.pyplot as plt
 import numpy as np
-from OOFunc import generateRunFiles,timeTo5Min,getTimetableMatrix,plotTimetable,Flight,Airline,Gate,Terminal,Bay,todo
+from OOFunc import generateRunFiles, timeTo5Min, fiveMinToTime, getTimetableMatrix, plotTimetable, Flight, Airline, Airport, Gate, Terminal, Bay, todo, getFlights
 import xml.etree.ElementTree as ET
-import random
 
-todo("Make data set better") #e.g. add corresponding sizes to aircraft #Random dataset?
+
+#Use the old nonrandomized data (0/1)
+staticDataSet = 0
+
+#If 0, generate random dataset with following properties:
+timeStart = "4pm"
+timeEnd = "9pm"
+flightsWanted=30
+
+#plot results?
+plotResults = 1
+plotTimeStart = "5pm" #in full hours
+plotTimeEnd = "8pm" #in full hours
+
 todo("Make bays size and distances correct")
-
 
 #Terminal(name,openEvening,distance)
 t1 = Terminal("A",True,250)
@@ -71,32 +81,41 @@ BritishAirways=Airline("British Airways")
 Transavia=Airline("Transavia")
 EasyJet = Airline("EasyJet")
 
-#Flight(identifier,passengers,arrivalTime,departureTime,formFactor,airliner)
-fl1 = Flight("JFK23", 250, "5:15pm","7pm","A",KLM)
-fl2 = Flight("JFK24", 255, "5:25pm","6:35pm","B",EasyJet)
-fl3 = Flight("JFK26", 255, "5:55pm", "7:05pm","C",Delta)
-fl4 = Flight("JFK27", 300, "6:05pm", "7:10pm","C",BritishAirways)
-fl5 = Flight("JFK28", 255, "6:15pm", "7:15pm","A",Transavia)
-fl6 = Flight("JFK29", 20, "6:25pm", "7:20pm","C",Transavia)
-fl7 = Flight("JFK30", 255, "6:30pm", "7:30pm","C",AirFrance)
-fl8 = Flight("JFK31", 255, "6:35pm", "7:45pm","A",Transavia)
-fl9 = Flight("JFK32", 255, "6:50pm", "8:10pm","B",KLM)
-fl10 = Flight("JFK33", 255, "6:50pm", "8:25pm","C",KLM)
-fl11 = Flight("JFK34", 255, "7:05pm", "8:45pm","B",KLM)
-fl12 = Flight("JFK35", 255, "7:15pm", "8:55pm","C",KLM)
-fl13 = Flight("JFK36", 255, "7:30pm", "9:05pm","A",Transavia)
-fl14 = Flight("JFK37", 255, "7:45pm", "9:20pm","C",BritishAirways)
-fl15 = Flight("JFK38", 255, "8:15pm", "10:05pm","B",EasyJet)
+#init airports for flight schedule randomizer:
+#distances as if a second large airport in the Netherlands would exist
+#Airport(name,shortname,distanceCategory)
+Airport("Amsterdam Schiphol Airport","AMS",1)
+Airport("Lelystad Airport","LEY",0)
+Airport("Berlin Regional Airport","BML",2)
+Airport("Brussels Airport (Zaventem Airport)", "BRU", 2)
+Airport("Barcelona - EL Prat Airport", "BLN", 3)
+Airport("Collective of NY airports","NYC",5)
+Airport("Collective of London airports", "LON", 3)
+Airport("Collective of Paris airports", "PAR", 2)
+Airport("Collective of Rome airports", "ROM", 4)
+Airport("Sydney Airport (Kingsford Smith Airport)", "SYD",5)
 
-#def getFLights(amountFlights):
-flightsWanted=5
-for i in range(flightsWanted):
-    random.seed('givemeflights')
-    print(random.randint(1,3))
-    source=["AMS","BAI","JFK","","",""]
-    flName=str(i+1)
+if staticDataSet == 1:
+    #Flight(identifier,passengers,arrivalTime,departureTime,formFactor,airliner)
+    fl1 = Flight("JFK23", 250, "5:15pm","7pm","A",KLM)
+    fl2 = Flight("JFK24", 255, "5:25pm","6:35pm","B",EasyJet)
+    fl3 = Flight("JFK26", 255, "5:55pm", "7:05pm","C",Delta)
+    fl4 = Flight("JFK27", 300, "6:05pm", "7:10pm","C",BritishAirways)
+    fl5 = Flight("JFK28", 255, "6:15pm", "7:15pm","A",Transavia)
+    fl6 = Flight("JFK29", 20, "6:25pm", "7:20pm","C",Transavia)
+    fl7 = Flight("JFK30", 255, "6:30pm", "7:30pm","C",AirFrance)
+    fl8 = Flight("JFK31", 255, "6:35pm", "7:45pm","A",Transavia)
+    fl9 = Flight("JFK32", 255, "6:50pm", "8:10pm","B",KLM)
+    fl10 = Flight("JFK33", 255, "6:50pm", "8:25pm","C",KLM)
+    fl11 = Flight("JFK34", 255, "7:05pm", "8:45pm","B",KLM)
+    fl12 = Flight("JFK35", 255, "7:15pm", "8:55pm","C",KLM)
+    fl13 = Flight("JFK36", 255, "7:30pm", "9:05pm","A",Transavia)
+    fl14 = Flight("JFK37", 255, "7:45pm", "9:20pm","C",BritishAirways)
+    fl15 = Flight("JFK38", 255, "8:15pm", "10:05pm","B",EasyJet)
+else:
+    getFlights(flightsWanted,timeStart,timeEnd)
     
-timemat = np.zeros((len(Flight._registry),len(Flight._registry))) #Generating time overlap matrix
+timemat = np.zeros((len(Flight._registry),len(Flight._registry))) #Generating time overlap matrix for full stay of aircraft
 i = 0
 for fl in Flight._registry:
     j = 0
@@ -328,17 +347,21 @@ for fl in Flight._registry:
 
 
 #Show dataset
-todo("Implement dataset mooie grafiekjes ") #Boris
+todo("Implement dataset mooie grafiekjes ")
 
 
 #Grafiekje solution:
-t=["5pm","6pm","7pm","8pm","9pm"]
-#t=["6pm","7pm","8pm"]
+t=['12am','1am','2am', '3am', '4am', '5am', '6am', '7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm', '7pm', '8pm', '9pm', '10pm', '11pm', '12am']
+tTo5Min = []
+for i in range(len(t)):
+    tTo5Min.append(timeTo5Min(t[i]))
+tStartIndex = tTo5Min.index(timeTo5Min(plotTimeStart))
+tEndIndex   = tTo5Min.index(timeTo5Min(plotTimeEnd))
 
 #getTimetableMatrix(timeStart,timeEnd,amountGates)
-timetableMatrix=getTimetableMatrix(t[0],t[-1],amountGates)
+timetableMatrix=getTimetableMatrix(t[tStartIndex],t[tEndIndex],amountGates)
 #plotTimeTable
-plotTimetable(timetableMatrix,1,xTickLabels=t,xTickSpacing=11,yTickLabels=True)
+plotTimetable(timetableMatrix,1,xTickLabels=t[tStartIndex:tEndIndex+1],xTickSpacing=11,yTickLabels=True)
 
 
 #Bonus:
