@@ -8,9 +8,10 @@ Created on Tue Nov 19 14:27:18 2019
 
 from os import getcwd,remove
 import numpy as np
+import random
 
 def todo(string):
-    return print(string)
+    return# print(string)
 
 def timeToMin(Time):
     #Takes input and converts it to minutes.

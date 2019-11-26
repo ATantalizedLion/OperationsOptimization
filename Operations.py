@@ -10,6 +10,7 @@ Created on Thu Nov 14 16:21:08 2019
 import numpy as np
 from OOFunc import generateRunFiles,timeTo5Min,getTimetableMatrix,plotTimetable,Flight,Airline,Gate,Terminal,Bay,todo
 import xml.etree.ElementTree as ET
+import random
 
 todo("Make data set better") #e.g. add corresponding sizes to aircraft #Random dataset?
 todo("Make bays size and distances correct")
@@ -88,8 +89,13 @@ fl14 = Flight("JFK37", 255, "7:45pm", "9:20pm","C",BritishAirways)
 fl15 = Flight("JFK38", 255, "8:15pm", "10:05pm","B",EasyJet)
 
 #def getFLights(amountFlights):
-#for i in range(len(amountFlights)):
-
+flightsWanted=5
+for i in range(flightsWanted):
+    random.seed('givemeflights')
+    print(random.randint(1,3))
+    source=["AMS","BAI","JFK","","",""]
+    flName=str(i+1)
+    
 timemat = np.zeros((len(Flight._registry),len(Flight._registry))) #Generating time overlap matrix
 i = 0
 for fl in Flight._registry:
