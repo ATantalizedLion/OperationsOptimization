@@ -226,6 +226,17 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
                     flight1var=str("X_I"+str(flight1.number)+"_K"+str(bay.number))
                     flight2var=str("X_I"+str(flight2.number)+"_K"+str(bay.number))
                     f.write(flight1var + " + " + flight2var + " <= 1 \n") 
+                    
+    #Time overlap constraint: For gates.                    
+    for i in range(len(timemat)):
+        for j in range(i):
+            if timemat[i,j]==1:
+                flight1=Flight._registry[i]
+                flight2=Flight._registry[j]
+                for gate in Gate._registry:
+                    flight1var=str("X_I"+str(flight1.number)+"_L"+str(gate.number))
+                    flight2var=str("X_I"+str(flight2.number)+"_L"+str(gate.number))
+                    f.write(flight1var + " + " + flight2var + " <= 1 \n") 
                 
     
     #Gate constrain 1: # domestic flights to domestic gates
@@ -313,8 +324,8 @@ todo("Implement dataset mooie grafiekjes ") #Boris
 
 
 #Grafiekje solution:
-#t=["5pm","6pm","7pm","8pm","9pm"]
-t=["6pm","7pm","8pm"]
+t=["5pm","6pm","7pm","8pm","9pm"]
+#t=["6pm","7pm","8pm"]
 
 #getTimetableMatrix(timeStart,timeEnd,amountGates)
 timetableMatrix=getTimetableMatrix(t[0],t[-1],amountGates)
