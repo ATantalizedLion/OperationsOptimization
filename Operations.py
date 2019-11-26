@@ -267,10 +267,16 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
                 
     
     #Gate constrain 1: # domestic flights to domestic gates
-    todo("Implement GC1") 
+    todo("Implement GC1")  #Boris
+    # for fl in Flight._registry:
+    #     print(fl.domestic)
+    #     if fl.domestic != 0:
+    #         for ga in Gate._registry:
+    #             if ga.domesticGate == True:
+    #                 flight1var = str("X_I"+str(fl.number)+"_L"+str(ga.number))
 
     #Gate constrain 2: # ensures flights after 6 pm are not in gates closed after that hour
-    todo("Implement GC2") 
+    todo("Implement GC2")  #Boris
     
     #Bay constraint 2: or Form factor constraint: (Compliance of a/c formfactor to bay/gate) 
     todo("Implement FFC") #Tommy
@@ -344,6 +350,7 @@ for fl in Flight._registry:
         d[i,j]=solNameList[findVar]
         if abs(int(solValueList[findVar]))!=0:
             fl.assignBay(bay)
+
 
 
 #Show dataset
