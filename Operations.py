@@ -97,8 +97,8 @@ Airport("Sydney Airport (Kingsford Smith Airport)", "SYD",5)
 
 if staticDataSet == 1:
     #Flight(identifier,passengers,arrivalTime,departureTime,formFactor,airliner)
-    fl1 = Flight("JFK23", 250, "5:15pm","7pm","A",KLM)
-    fl2 = Flight("JFK24", 255, "5:25pm","6:35pm","B",EasyJet)
+    fl1 = Flight("JFK23", 250, "5:15pm","7pm","A",KLM,domestic=1)
+    fl2 = Flight("JFK24", 255, "5:25pm","6:35pm","B",EasyJet,domestic=1)
     fl3 = Flight("JFK26", 255, "5:55pm", "7:05pm","C",Delta)
     fl4 = Flight("JFK27", 300, "6:05pm", "7:10pm","C",BritishAirways)
     fl5 = Flight("JFK28", 255, "6:15pm", "7:15pm","A",Transavia)

@@ -339,14 +339,17 @@ def getFlights(flightsWanted,timeStart,timeEnd):
         #Size categories defined in airport class above
         if air.distanceCategory==0:
             flFF = "C"
+            flDomestic=1
         if air.distanceCategory==1:
             flFF = "B"
+            flDomestic=1
         if air.distanceCategory==2:
             r = random.randint(0,1)
             if r == 0:
                 flFF = "B"
             else: 
                 flFF = "C"
+            flDomestic=0
         if air.distanceCategory==3:
             r = random.randint(0,2)
             if r == 0:
@@ -355,14 +358,17 @@ def getFlights(flightsWanted,timeStart,timeEnd):
                 flFF = "B"
             else: 
                 flFF = "C"
+            flDomestic=0
         if air.distanceCategory==4:
             r = random.randint(0,1)
             if r == 0:
                 flFF = "A"
             else: 
                 flFF = "B" 
+            flDomestic=0
         if air.distanceCategory==5:
             flFF = "A"
+            flDomestic=0
             
     #    get amount of passengers 
         if flFF == "A": #300-450
@@ -377,6 +383,6 @@ def getFlights(flightsWanted,timeStart,timeEnd):
         flArr = random.randrange(timeStart,timeEnd)
         flDep = flArr + random.randint(4,24) # stays 20 to 120 minutes
     
-        Flight(flName, flPass, fiveMinToTime(flArr), fiveMinToTime(flDep), flFF, flAirline)
+        Flight(flName, flPass, fiveMinToTime(flArr), fiveMinToTime(flDep), flFF, flAirline,domestic=flDomestic)
     return
 
