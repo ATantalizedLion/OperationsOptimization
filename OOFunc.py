@@ -69,9 +69,9 @@ def generateRunFiles(lpFileName):
         removed=1
     #generate CCF:
     f = open(CCFPath,"w+")
-    f.write("read "+LpPath+"\n")
+    f.write('read "'+LpPath+'"\n')
     f.write("opt\n")
-    f.write("write "+SOLPath+"\n")
+    f.write('write "'+SOLPath+'"\n')
     f.write("quit\n")
     f.close() 
     #generate BAT
