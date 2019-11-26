@@ -165,7 +165,7 @@ class Flight(object):
             self.formFactor = formFactor #formFactor of the aircraft (for compliance of aircraft to size constraints)
             self.airline = airline #What airline does the aircraft belong to as an object
             self.domestic = domestic #Domestic or international
-            
+
             #timeSlotsPer5Min
             self.timeSlotBegin = timeTo5Min(arrivalTime)
             self.timeSlotEnd = timeTo5Min(departureTime)
