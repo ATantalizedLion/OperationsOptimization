@@ -76,7 +76,7 @@ def generateRunFiles(lpFileName):
     f.close() 
     #generate BAT
     f = open(BatPath,"w+")
-    f.write('"C:\Program Files\IBM\ILOG\CPLEX_Studio129\cplex\\bin\\x64_win64\cplex.exe" < '+CCFPath)
+    f.write('"C:\Program Files\IBM\ILOG\CPLEX_Studio129\cplex\\bin\\x64_win64\cplex.exe" < '+ '"'+CCFPath+'"')
     f.close()
     #run BAT
     from subprocess import Popen
@@ -101,11 +101,11 @@ class Terminal(object):
             
 class Gate(object):
         _registry = [] #Keep track of all instances
-        def __init__(self,terminal,domesticFlight,distanceToTerminal):
+        def __init__(self,terminal,domesticGate,distanceToTerminal):
             self._registry.append(self) #Add gate to the list of gates
             self.number = len(Gate._registry) #Give gate a number
             self.terminal = terminal #Link gate to a terminal - Use the terminal Object as input
-            self.domesticFlight = domesticFlight #Boolean indicating whether this gate is reserved for domestic flights
+            self.domesticGate = domesticGate #Boolean indicating whether this gate is reserved for domestic flights
             self.distanceToTerminal = distanceToTerminal #distance from gate to Terminal entrance/exit
             self.openEvening = terminal.openEvening #inherit openEvening boolean from Terminal class
             self.distance = distanceToTerminal + terminal.distance #distance from gate to airport entrance/exit
@@ -132,7 +132,7 @@ class Airline(object):
             
 class Flight(object):
         _registry = [] #Keep track of all instances
-        def __init__(self,identifier,passengers,arrivalTime,departureTime,formFactor,airline,assignedGate=0):
+        def __init__(self,identifier,passengers,arrivalTime,departureTime,formFactor,airline,assignedGate=0,domestic=0):
             self._registry.append(self) #Add this flight to list of flights
             self.number=len(Flight._registry) #Give flight a number
             self.identifier = identifier #Store the flight code of the aircraft
@@ -141,6 +141,7 @@ class Flight(object):
             self.departureTime = departureTime #Departure time of the aircraft
             self.formFactor = formFactor #formFactor of the aircraft (for compliance of aircraft to size constraints)
             self.airline = airline #What airline does the aircraft belong to as an object
+            self.domestic = domestic #Domestic or international
             
             #timeSlotsPer5Min
             self.timeSlotBegin = timeTo5Min(arrivalTime)

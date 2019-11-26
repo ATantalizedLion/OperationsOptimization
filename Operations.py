@@ -87,6 +87,8 @@ fl13 = Flight("JFK36", 255, "7:30pm", "9:05pm","A",Transavia)
 fl14 = Flight("JFK37", 255, "7:45pm", "9:20pm","C",BritishAirways)
 fl15 = Flight("JFK38", 255, "8:15pm", "10:05pm","B",EasyJet)
 
+#def getFLights(amountFlights):
+#for i in range(len(amountFlights)):
 
 timemat = np.zeros((len(Flight._registry),len(Flight._registry))) #Generating time overlap matrix
 i = 0
@@ -310,7 +312,7 @@ for fl in Flight._registry:
             
     for bay in Bay._registry:
         i = fl.number-1
-        j = ga.number-1
+        j = bay.number-1
         curVar=str("X_I"+str(fl.number)+"_K"+str(bay.number))
         findVar=solNameList.index(curVar)
         c[i,j]=solValueList[findVar]
