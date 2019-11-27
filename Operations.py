@@ -12,7 +12,7 @@ import xml.etree.ElementTree as ET
 
 
 #Use the old nonrandomized data (0/1)
-staticDataSet = 1
+staticDataSet = 0
 
 #If 0, generate random dataset with following properties:
 timeStart = "4pm"
@@ -108,10 +108,10 @@ if staticDataSet == 1:
     fl9 = Flight("JFK32", 255, "6:50pm", "8:10pm","B",KLM)
     fl10 = Flight("JFK33", 255, "6:50pm", "8:25pm","C",KLM)
     fl11 = Flight("JFK34", 255, "7:05pm", "8:45pm","B",KLM)
-    fl12 = Flight("JFK35", 255, "7:15pm", "8:55pm","C",KLM,domestic=1)
-    fl13 = Flight("JFK36", 255, "7:30pm", "9:05pm","A",Transavia,domestic=1)
-    fl14 = Flight("JFK37", 255, "7:45pm", "9:20pm","C",BritishAirways,domestic=1)
-    fl15 = Flight("JFK38", 255, "8:15pm", "10:05pm","B",EasyJet,domestic=1)
+    fl12 = Flight("JFK35", 255, "7:15pm", "8:55pm","C",KLM)
+    fl13 = Flight("JFK36", 255, "7:30pm", "9:05pm","A",Transavia)
+    fl14 = Flight("JFK37", 255, "7:45pm", "9:20pm","C",BritishAirways, domestic=1)
+    fl15 = Flight("JFK38", 255, "8:15pm", "10:05pm","B",EasyJet,domestic =1)
 else:
     getFlights(flightsWanted,timeStart,timeEnd)
     
@@ -267,7 +267,7 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
                 
     
     #Gate constrain 1: # domestic flights to domestic gates, vice versa
-    todo("Implement GC1")  #Boris
+
     DOMnum = 0
     for fl in Flight._registry:
         if fl.domestic == 1:
@@ -282,13 +282,12 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
             break
 
     for fl in Flight._registry:
-        print(fl.domestic)
         if fl.domestic != 0:
             for ga in Gate._registry:
                 if ga.domesticGate == True:
                     flight1var = str("X_I"+str(fl.number)+"_L"+str(ga.number))
                     if fl.number == DOMnum and ga.number == 3:
-                        f.write(flight1var + " <= 1 \n")
+                        f.write(flight1var + " = 1 \n")
                     else:
                         f.write(flight1var + " + ")
 
@@ -299,18 +298,31 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
                     flight1var = str("X_I" + str(fl.number) + "_L" + str(ga.number))
                     if DOMnum == len(Flight._registry):
                         if fl.number == len(Flight._registry)-revnum and ga.number == 3:
-                            f.write(flight1var + " <= 0 \n")
+                            f.write(flight1var + " = 0 \n")
+                        else:
+                            f.write(flight1var + " + ")
+                    else:
+                        if fl.number == len(Flight._registry) and ga.number == 3:
+                            f.write(flight1var + " = 0 \n")
                         else:
                             f.write(flight1var + " + ")
 
 
-
-
-
     #Gate constrain 2: # ensures flights after 6 pm are not in gates closed after that hour
-    todo("Implement GC2")  #Boris
-    
-    #Bay constraint 2: or Form factor constraint: (Compliance of a/c formfactor to bay/gate) 
+    #Gates in terminal B (gates 5-7) are closed after 7pm
+    for fl in Flight._registry:
+        if fl.timeSlotBegin >= timeTo5Min("7pm"):
+            for ga in Gate._registry:
+                if ga.number >= 5 and ga.number <= 7:
+                    flight1var = str("X_I"+str(fl.number) + "_L" + str(ga.number))
+                    print(ga.number)
+                    if ga.number == 7 and fl.number == len(Flight._registry):
+                        f.write(flight1var + " = 0 \n")
+                    else:
+                        f.write(flight1var + " + ")
+
+
+    #Bay constraint 2: or Form factor constraint: (Compliance of a/c formfactor to bay/gate)
     todo("Implement FFC") #Tommy
     todo("Figure out formfactors that are used for aircraft in airport")    
     todo("Maybe make it A = wide body, B = reg bod, C= narrow")
