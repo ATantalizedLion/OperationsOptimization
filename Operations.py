@@ -335,18 +335,25 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
         for bay in Bay._registry:
             if bay.formFactor == FF_all[i]:
                 lst.append(bay.number)
-        FF_compliance1.append(lst)
-    
+        temp1 = list(lst)
+        FF_compliance1.append(temp1)
+  
+    stored_list = []
     for i in range(len(FF_compliance1)):
         if i == 0:
-            templist = FF_compliance1[i]
-            newlist = temp
-            FF_compliance2.append(newlist)
+            templist1 = []
+            for j in FF_compliance1[i]:
+                templist1.append(j)
+                stored_list.append(j)
+            FF_compliance2.append(templist1)
+                
         else:
-            for j in range(len(FF_compliance1[i])):
-                templist.append(FF_compliance1[i][j])
-                templist.sort()
-            FF_compliance2.append(list(templist))
+            templist1 = []
+            for j in FF_compliance1[i]:
+                templist1.append(j) 
+            stored_list.extend(templist1)
+            newlist = sorted(stored_list)
+            FF_compliance2.append(newlist)
 
     for fl in Flight._registry:
         for bay in Bay._registry:
