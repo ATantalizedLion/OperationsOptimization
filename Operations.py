@@ -97,21 +97,21 @@ Airport("Sydney Airport (Kingsford Smith Airport)", "SYD",5)
 
 if staticDataSet == 1:
     #Flight(identifier,passengers,arrivalTime,departureTime,formFactor,airliner)
-    fl1 = Flight("DOM23", 250, "5:15pm","7pm","A",KLM,domestic=1)
-    fl2 = Flight("JFK24", 255, "5:25pm","6:35pm","B",EasyJet)
-    fl3 = Flight("JFK26", 255, "5:55pm", "7:05pm","C",Delta)
-    fl4 = Flight("JFK27", 300, "6:05pm", "7:10pm","C",BritishAirways)
-    fl5 = Flight("JFK28", 255, "6:15pm", "7:15pm","A",Transavia)
-    fl6 = Flight("JFK29", 20, "6:25pm", "7:20pm","C",Transavia)
-    fl7 = Flight("JFK30", 255, "6:30pm", "7:30pm","C",AirFrance)
-    fl8 = Flight("JFK31", 255, "6:35pm", "7:45pm","A",Transavia)
-    fl9 = Flight("JFK32", 255, "6:50pm", "8:10pm","B",KLM)
-    fl10 = Flight("JFK33", 255, "6:50pm", "8:25pm","C",KLM)
-    fl11 = Flight("JFK34", 255, "7:05pm", "8:45pm","B",KLM)
-    fl12 = Flight("JFK35", 255, "7:15pm", "8:55pm","C",KLM)
-    fl13 = Flight("JFK36", 255, "7:30pm", "9:05pm","A",Transavia)
-    fl14 = Flight("DOM37", 255, "7:45pm", "9:20pm","C",BritishAirways, domestic=1)
-    fl15 = Flight("DOM38", 255, "8:15pm", "10:05pm","B",EasyJet,domestic = 1)
+    fl1 = Flight("DOM23", 300, "5:15pm","7pm","A",KLM,domestic=1)
+    fl2 = Flight("JFK24", 200, "5:25pm","6:35pm","B",EasyJet)
+    fl3 = Flight("JFK26", 100, "5:55pm", "7:05pm","C",Delta)
+    fl4 = Flight("JFK27", 100, "6:05pm", "7:10pm","C",BritishAirways)
+    fl5 = Flight("JFK28", 300, "3pm", "4pm","C",Transavia)
+    fl6 = Flight("JFK29", 100, "6:25pm", "7:20pm","C",Transavia)
+    fl7 = Flight("JFK30", 100, "6:30pm", "7:30pm","C",AirFrance)
+    fl8 = Flight("JFK31", 300, "6:35pm", "7:45pm","A",Transavia)
+    fl9 = Flight("JFK32", 200, "6:50pm", "8:10pm","B",KLM)
+    fl10 = Flight("JFK33", 100, "6:50pm", "8:25pm","C",KLM)
+    fl11 = Flight("JFK34", 200, "7:05pm", "8:45pm","B",KLM)
+    fl12 = Flight("JFK35", 100, "7:15pm", "8:55pm","C",KLM)
+    fl13 = Flight("JFK36", 300, "7:30pm", "9:05pm","A",Transavia)
+    fl14 = Flight("DOM37", 100, "7:45pm", "9:20pm","C",BritishAirways, domestic=1)
+    fl15 = Flight("DOM38", 200, "8:15pm", "10:05pm","B",EasyJet,domestic = 1)
 else:
     getFlights(flightsWanted,timeStart,timeEnd)
     
@@ -218,7 +218,23 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
 #               This does the same for X_I_L
                 f.write("-"+curXIKL+" +"+curXIL+"<=0\n")
                 f.write( curXIKL+" +"+curXIL+"-" + curXIKL+"_"+str(i)+"2 <=1\n")
-
+                
+    #    #Link all bays with a gate 
+    #    for fl in Flight._registry:
+    #        for bay in Bay._registry:           
+    #            for i in range(len(bay.linkedGates)):
+    #                ga=bay.linkedGates[i]
+    #                curXIKL=str("X_I"+str(fl.number)+"_K"+str(bay.number)+"_L"+str(ga.number))
+    #                curXIK=str("X_I"+str(fl.number)+"_K"+str(bay.number))
+    #                curXIL=str("X_I"+str(fl.number)+"_L"+str(ga.number))
+    #                
+    ##               Sum of all XIKL for this bay = 1                
+    #                f.write(curXIKL)
+    #                
+    #                if i == len(bay.linkedGates):
+    #                    f.write(" = 1")
+    #                else:
+    #                    f.write(" + ")
     
     #Have all flights require a bay for full stay
     for fl in Flight._registry:
