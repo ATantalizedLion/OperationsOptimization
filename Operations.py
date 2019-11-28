@@ -22,7 +22,7 @@ flightsWanted=30
 #plot results?
 plotResults = 1
 plotTimeStart = "5pm" #in full hours
-plotTimeEnd = "8pm" #in full hours
+plotTimeEnd = "9pm" #in full hours
 
 todo("Make bays size and distances correct")
 
@@ -97,7 +97,7 @@ Airport("Sydney Airport (Kingsford Smith Airport)", "SYD",5)
 
 if staticDataSet == 1:
     #Flight(identifier,passengers,arrivalTime,departureTime,formFactor,airliner)
-    fl1 = Flight("JFK23", 250, "5:15pm","7pm","A",KLM,domestic=1)
+    fl1 = Flight("DOM23", 250, "5:15pm","7pm","A",KLM,domestic=1)
     fl2 = Flight("JFK24", 255, "5:25pm","6:35pm","B",EasyJet)
     fl3 = Flight("JFK26", 255, "5:55pm", "7:05pm","C",Delta)
     fl4 = Flight("JFK27", 300, "6:05pm", "7:10pm","C",BritishAirways)
@@ -110,8 +110,8 @@ if staticDataSet == 1:
     fl11 = Flight("JFK34", 255, "7:05pm", "8:45pm","B",KLM)
     fl12 = Flight("JFK35", 255, "7:15pm", "8:55pm","C",KLM)
     fl13 = Flight("JFK36", 255, "7:30pm", "9:05pm","A",Transavia)
-    fl14 = Flight("JFK37", 255, "7:45pm", "9:20pm","C",BritishAirways, domestic=1)
-    fl15 = Flight("JFK38", 255, "8:15pm", "10:05pm","B",EasyJet,domestic =1)
+    fl14 = Flight("DOM37", 255, "7:45pm", "9:20pm","C",BritishAirways, domestic=1)
+    fl15 = Flight("DOM38", 255, "8:15pm", "10:05pm","B",EasyJet,domestic =1)
 else:
     getFlights(flightsWanted,timeStart,timeEnd)
     
@@ -267,26 +267,12 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
                 
     
     #Gate constrain 1: # domestic flights to domestic gates, vice versa
-
-    DOMnum = 0
-    for fl in Flight._registry:
-        if fl.domestic == 1:
-            DOMnum = fl.number
-
-
-    revnum = 0
-    for fl in Flight._registry[::-1]:
-        if fl.domestic == 1:
-            revnum +=1
-        else:
-            break
-
     for fl in Flight._registry:
         if fl.domestic != 0:
             for ga in Gate._registry:
                 if ga.domesticGate == True:
                     flight1var = str("X_I"+str(fl.number)+"_L"+str(ga.number))
-                    if fl.number == DOMnum and ga.number == 3:
+                    if ga.number == 3:
                         f.write(flight1var + " = 1 \n")
                     else:
                         f.write(flight1var + " + ")
@@ -296,16 +282,10 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
             for ga in Gate._registry:
                 if ga.domesticGate == True:
                     flight1var = str("X_I" + str(fl.number) + "_L" + str(ga.number))
-                    if DOMnum == len(Flight._registry):
-                        if fl.number == len(Flight._registry)-revnum and ga.number == 3:
-                            f.write(flight1var + " = 0 \n")
-                        else:
-                            f.write(flight1var + " + ")
+                    if ga.number == 3:
+                        f.write(flight1var + " = 0 \n")
                     else:
-                        if fl.number == len(Flight._registry) and ga.number == 3:
-                            f.write(flight1var + " = 0 \n")
-                        else:
-                            f.write(flight1var + " + ")
+                        f.write(flight1var + " + ")
 
 
     #Gate constrain 2: # ensures flights after 6 pm are not in gates closed after that hour
