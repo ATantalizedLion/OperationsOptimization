@@ -12,7 +12,7 @@ import xml.etree.ElementTree as ET
 
 
 #Use the old nonrandomized data (0/1)
-staticDataSet = 0
+staticDataSet = 1
 
 #If 0, generate random dataset with following properties:
 timeStart = "4pm"
@@ -315,17 +315,50 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
             for ga in Gate._registry:
                 if ga.number >= 5 and ga.number <= 7:
                     flight1var = str("X_I"+str(fl.number) + "_L" + str(ga.number))
-                    print(ga.number)
+                    #print(ga.number)
                     if ga.number == 7 and fl.number == len(Flight._registry):
                         f.write(flight1var + " = 0 \n")
                     else:
                         f.write(flight1var + " + ")
 
-
     #Bay constraint 2: or Form factor constraint: (Compliance of a/c formfactor to bay/gate)
-    todo("Implement FFC") #Tommy
-    todo("Figure out formfactors that are used for aircraft in airport")    
-    todo("Maybe make it A = wide body, B = reg bod, C= narrow")
+    
+    FF_all = []
+    FF_compliance1 = []
+    FF_compliance2 = []
+    for fl in Flight._registry:
+        if fl.formFactor not in FF_all:
+            FF_all.append(fl.formFactor)
+            
+    for i in range(len(FF_all)): 
+        lst = []
+        for bay in Bay._registry:
+            if bay.formFactor == FF_all[i]:
+                lst.append(bay.number)
+        FF_compliance1.append(lst)
+    
+    for i in range(len(FF_compliance1)):
+        if i == 0:
+            templist = FF_compliance1[i]
+            newlist = temp
+            FF_compliance2.append(newlist)
+        else:
+            for j in range(len(FF_compliance1[i])):
+                templist.append(FF_compliance1[i][j])
+                templist.sort()
+            FF_compliance2.append(list(templist))
+
+    for fl in Flight._registry:
+        for bay in Bay._registry:
+            for i in range(len(FF_all)):
+                for j in range(len(FF_compliance2[i])):
+                    if fl.formFactor == FF_all[i] and bay.number==FF_compliance2[i][j]:
+                        f.write("X_I"+str(fl.number)+"_K"+str(bay.number))
+                        if int (bay.number) == FF_compliance2[i][-1]:
+                            f.write(" = 1 \n")
+                        if int(bay.number) != FF_compliance2[i][-1]:
+                            f.write(" + ")
+        
     todo("An A bay would be usable by 1 A, 1B or 2C") #Cool but hard to implement
     todo("A  B bay would be usable by 0 A, 1B or 1C")
     todo("A  C bay would be usable by 0 A, 0B or 1C")
