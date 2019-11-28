@@ -15,9 +15,9 @@ import xml.etree.ElementTree as ET
 staticDataSet = 1
 
 #If 0, generate random dataset with following properties:
-timeStart = "4pm"
-timeEnd = "9pm"
-flightsWanted=30
+timeStart = "11am"
+timeEnd = "4pm"
+flightsWanted= 20
 
 #plot results?
 plotResults = 1
@@ -29,7 +29,7 @@ todo("Make bays size and distances correct")
 #Terminal(name,openEvening,distance)
 t1 = Terminal("A",True,250)
 t2 = Terminal("B",True,610)
-t3 = Terminal("C",False,460)
+t3 = Terminal("C",True,460)
 t4 = Terminal("D",False,100)
 
 #Gate(terminal,domesticFlight,distanceToTerminal)
@@ -111,7 +111,7 @@ if staticDataSet == 1:
     fl12 = Flight("JFK35", 255, "7:15pm", "8:55pm","C",KLM)
     fl13 = Flight("JFK36", 255, "7:30pm", "9:05pm","A",Transavia)
     fl14 = Flight("DOM37", 255, "7:45pm", "9:20pm","C",BritishAirways, domestic=1)
-    fl15 = Flight("DOM38", 255, "8:15pm", "10:05pm","B",EasyJet,domestic =1)
+    fl15 = Flight("DOM38", 255, "8:15pm", "10:05pm","B",EasyJet,domestic = 1)
 else:
     getFlights(flightsWanted,timeStart,timeEnd)
     
@@ -267,37 +267,36 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
                 
     
     #Gate constrain 1: # domestic flights to domestic gates, vice versa
+    #Domestic flights not at domestic gates
     for fl in Flight._registry:
         if fl.domestic != 0:
             for ga in Gate._registry:
                 if ga.domesticGate == True:
-                    flight1var = str("X_I"+str(fl.number)+"_L"+str(ga.number))
-                    if ga.number == 3:
-                        f.write(flight1var + " = 1 \n")
+                    curVar = str("X_I"+str(fl.number)+"_L"+str(ga.number))
+                    if ga.number == Gate.finalDomesticNumber:
+                        f.write(curVar + " = 1 \n")
                     else:
-                        f.write(flight1var + " + ")
-
+                        f.write(curVar + " + ")
+    #international flights not at domestic gates
     for fl in Flight._registry:
         if fl.domestic == 0:
             for ga in Gate._registry:
                 if ga.domesticGate == True:
-                    flight1var = str("X_I" + str(fl.number) + "_L" + str(ga.number))
-                    if ga.number == 3:
-                        f.write(flight1var + " = 0 \n")
+                    curVar = str("X_I" + str(fl.number) + "_L" + str(ga.number))
+                    if ga.number == Gate.finalDomesticNumber:
+                        f.write(curVar + " = 0 \n")
                     else:
-                        f.write(flight1var + " + ")
+                        f.write(curVar + " + ")
 
 
-    #Gate constrain 2: # ensures flights after 6 pm are not in gates closed after that hour
-    #Gates in terminal B (gates 5-7) are closed after 7pm
+    #Gate constrain 2: # ensures flights after 8 pm are not in gates closed after that hour
     for fl in Flight._registry:
-        if fl.timeSlotBegin >= timeTo5Min("7pm"):
+        if fl.timeSlotEnd >= timeTo5Min("8pm"):
             for ga in Gate._registry:
-                if ga.number >= 5 and ga.number <= 7:
+                if ga.terminal.openEvening==False:
                     flight1var = str("X_I"+str(fl.number) + "_L" + str(ga.number))
-                    #print(ga.number)
-                    if ga.number == 7 and fl.number == len(Flight._registry):
-                        f.write(flight1var + " = 0 \n")
+                    if ga.number == Gate.finalEveningClosedNumber:
+                        f.write(flight1var + " = 0 \n")                        
                     else:
                         f.write(flight1var + " + ")
 
@@ -402,7 +401,7 @@ for fl in Flight._registry:
         findVar=solNameList.index(curVar)
         a[i,j]=solValueList[findVar]
         b[i,j]=solNameList[findVar]
-        if abs(int(solValueList[findVar]))!=0:
+        if abs(int(solValueList[findVar]))==1:
             fl.assignGate(ga)
             
     for bay in Bay._registry:
@@ -412,9 +411,8 @@ for fl in Flight._registry:
         findVar=solNameList.index(curVar)
         c[i,j]=solValueList[findVar]
         d[i,j]=solNameList[findVar]
-        if abs(int(solValueList[findVar]))!=0:
+        if abs(int(solValueList[findVar]))==1:
             fl.assignBay(bay)
-
 
 
 #Show dataset

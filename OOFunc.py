@@ -124,11 +124,19 @@ class Terminal(object):
             
 class Gate(object):
         _registry = [] #Keep track of all instances
+        finalEveningClosedNumber = 0 #highest number of gates closed in the evening
+        finalDomesticNumber = 0
         def __init__(self,terminal,domesticGate,distanceToTerminal):
             self._registry.append(self) #Add gate to the list of gates
             self.number = len(Gate._registry) #Give gate a number
             self.terminal = terminal #Link gate to a terminal - Use the terminal Object as input
+            if terminal.openEvening == False:
+                Gate.finalEveningClosedNumber = self.number
+                
             self.domesticGate = domesticGate #Boolean indicating whether this gate is reserved for domestic flights
+            if self.domesticGate == 1:
+                Gate.finalDomesticNumber = self.number
+                
             self.distanceToTerminal = distanceToTerminal #distance from gate to Terminal entrance/exit
             self.openEvening = terminal.openEvening #inherit openEvening boolean from Terminal class
             self.distance = distanceToTerminal + terminal.distance #distance from gate to airport entrance/exit
@@ -155,6 +163,9 @@ class Airline(object):
             
 class Flight(object):
         _registry = [] #Keep track of all instances
+        domFlights = 0 #amount of domestic flights
+        finalDomFlight = 0 #Number of the last domestic flight
+        
         def __init__(self,identifier,passengers,arrivalTime,departureTime,formFactor,airline,assignedGate=0,domestic=0):
             self._registry.append(self) #Add this flight to list of flights
             self.number=len(Flight._registry) #Give flight a number
@@ -165,7 +176,9 @@ class Flight(object):
             self.formFactor = formFactor #formFactor of the aircraft (for compliance of aircraft to size constraints)
             self.airline = airline #What airline does the aircraft belong to as an object
             self.domestic = domestic #Domestic or international
-
+            if domestic == 1:
+                Flight.domFlights += 1
+                Flight.finalDomFlight = self.number
             #timeSlotsPer5Min
             self.timeSlotBegin = timeTo5Min(arrivalTime)
             self.timeSlotEnd = timeTo5Min(departureTime)
