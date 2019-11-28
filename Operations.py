@@ -9,7 +9,9 @@ Created on Thu Nov 14 16:21:08 2019
 import numpy as np
 from OOFunc import generateRunFiles, timeTo5Min, fiveMinToTime, getTimetableMatrix, plotTimetable, Flight, Airline, Airport, Gate, Terminal, Bay, todo, getFlights
 import xml.etree.ElementTree as ET
+import matplotlib.pyplot as plt
 
+plt.close("all")
 
 #Use the old nonrandomized data (0/1)
 staticDataSet = 1
@@ -21,10 +23,9 @@ flightsWanted= 20
 
 #plot results?
 plotResults = 1
-plotTimeStart = "5pm" #in full hours
-plotTimeEnd = "9pm" #in full hours
+plotTimeStart = "5pm" #in full hours #5pm for static
+plotTimeEnd = "11pm" #in full hours #11pm for static
 
-todo("Make bays size and distances correct")
 
 #Terminal(name,openEvening,distance)
 t1 = Terminal("A",True,250)
@@ -65,10 +66,10 @@ b10 = Bay([g8,g9],[100,150],"A")
 b11 = Bay([g9,g10],[150,100],"A")
 b12 = Bay([g9,g10],[100,150],"A")
 
-b13 = Bay([g11],[100],"C")
-b14 = Bay([g11,g12],[100,100],"C")
-b15 = Bay([g11,g12],[100,100],"C")
-b16 = Bay([g12],[100],"C")
+b13 = Bay([g11],[100],"B")
+b14 = Bay([g11,g12],[100,100],"B")
+b15 = Bay([g11,g12],[100,100],"B")
+b16 = Bay([g12],[100],"B")
 
 #remote bays 
 #b20 = Bay(Gate._registry,[])
@@ -97,21 +98,21 @@ Airport("Sydney Airport (Kingsford Smith Airport)", "SYD",5)
 
 if staticDataSet == 1:
     #Flight(identifier,passengers,arrivalTime,departureTime,formFactor,airliner)
-    fl1 = Flight("DOM23", 300, "5:15pm","7pm","A",KLM,domestic=1)
-    fl2 = Flight("JFK24", 200, "5:25pm","6:35pm","B",EasyJet)
-    fl3 = Flight("JFK26", 100, "5:55pm", "7:05pm","C",Delta)
-    fl4 = Flight("JFK27", 100, "6:05pm", "7:10pm","C",BritishAirways)
-    fl5 = Flight("JFK28", 300, "3pm", "4pm","C",Transavia)
-    fl6 = Flight("JFK29", 100, "6:25pm", "7:20pm","C",Transavia)
-    fl7 = Flight("JFK30", 100, "6:30pm", "7:30pm","C",AirFrance)
-    fl8 = Flight("JFK31", 300, "6:35pm", "7:45pm","A",Transavia)
-    fl9 = Flight("JFK32", 200, "6:50pm", "8:10pm","B",KLM)
-    fl10 = Flight("JFK33", 100, "6:50pm", "8:25pm","C",KLM)
-    fl11 = Flight("JFK34", 200, "7:05pm", "8:45pm","B",KLM)
-    fl12 = Flight("JFK35", 100, "7:15pm", "8:55pm","C",KLM)
-    fl13 = Flight("JFK36", 300, "7:30pm", "9:05pm","A",Transavia)
-    fl14 = Flight("DOM37", 100, "7:45pm", "9:20pm","C",BritishAirways, domestic=1)
-    fl15 = Flight("DOM38", 200, "8:15pm", "10:05pm","B",EasyJet,domestic = 1)
+    fl1 = Flight("JFK24", 200, "5:25pm","6:35pm","B",EasyJet)
+    fl2 = Flight("JFK26", 100, "5:55pm", "7:05pm","C",Delta)
+    fl3 = Flight("JFK27", 100, "6:05pm", "7:10pm","C",BritishAirways)
+    fl4 = Flight("JFK28", 300, "6pm", "6:30pm","C",Transavia)
+    fl5 = Flight("JFK29", 100, "6:25pm", "7:20pm","C",Transavia)
+    fl6 = Flight("JFK31", 300, "6:35pm", "7:45pm","A",Transavia)
+    fl7 = Flight("JFK35", 100, "7:15pm", "8:55pm","C",KLM)
+    fl8 = Flight("JFK36", 300, "7:30pm", "9:05pm","A",Transavia)
+    fl9 = Flight("DOM37", 100, "7:45pm", "9:20pm","C",BritishAirways, domestic=1)
+    fl10 = Flight("DOM38", 200, "8:15pm", "10:05pm","B",EasyJet,domestic = 1)
+    fl11 = Flight("JFK32", 200, "5:10pm", "5:55pm","B",KLM)
+    fl12 = Flight("JFK33", 100, "5:30pm", "5:05pm","C",KLM)
+    fl13 = Flight("JFK34", 200, "8:05pm", "8:45pm","B",KLM)
+    fl14 = Flight("JFK30", 100, "6:30pm", "7:30pm","C",AirFrance)
+    fl15 = Flight("DOM23", 300, "5:15pm","6pm","A",KLM,domestic=1)
 else:
     getFlights(flightsWanted,timeStart,timeEnd)
     
@@ -133,7 +134,18 @@ amountBays=len(Bay._registry)
     
 #list for binary generation
 binlist=[]
-
+for fl in Flight._registry:
+    for bay in Bay._registry:
+        curXIK=str("X_I"+str(fl.number)+"_K"+str(bay.number))
+        binlist.append(curXIK)
+    for ga in Gate._registry:
+        curXIL=str("X_I"+str(fl.number)+"_L"+str(ga.number))
+        binlist.append(curXIL)
+    for bay in Bay._registry:
+        for ga in bay.linkedGates:
+            curXIKL=str("X_I"+str(fl.number)+"_K"+str(bay.number)+"_L"+str(ga.number))
+            binlist.append(curXIKL)
+            
 #I=flights
 #K=bays
 #L=gates
@@ -183,7 +195,7 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
                gaDist=bay.linkedGatesDistances[i] 
                f.write(str(fl.passengers*gaDist))
                f.write(" X_I"+str(fl.number)+"_K"+str(bay.number)+"_L"+str(ga.number))
-               binlist.append("X_I"+str(fl.number)+"_K"+str(bay.number)+"_L"+str(ga.number))
+#               binlist.append("X_I"+str(fl.number)+"_K"+str(bay.number)+"_L"+str(ga.number))
                if int(fl.number)!=int(amountFlights) or int(bay.number)!=int(amountBays) or i+1!=len(bay.linkedGates):
                   f.write(" + ") 
                else:
@@ -196,67 +208,45 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
     f.write("Subject to:\n")
     
     #Link X_I_K_L with X_I_K and X_I_L
-    for fl in Flight._registry:
-        for bay in Bay._registry:           
-            for i in range(len(bay.linkedGates)):
+    for fl in Flight._registry: #X_I
+        for bay in Bay._registry:  #X_I_L        
+            for i in range(len(bay.linkedGates)): 
                 ga=bay.linkedGates[i]
                 curXIKL=str("X_I"+str(fl.number)+"_K"+str(bay.number)+"_L"+str(ga.number))
                 curXIK=str("X_I"+str(fl.number)+"_K"+str(bay.number))
                 curXIL=str("X_I"+str(fl.number)+"_L"+str(ga.number))
 
 #               Either or constraints, as is depicted in slides.    
-#               This ensures 
-#                
 #               x1 must be 1 for x2 to be 1 
 #               -x1+x2<=0
 #               x1+x2-y1<=1                
+
+#               XIK must be 1 for XIKL to be 1
+                f.write("-"+curXIK+" + "+curXIKL+" <=0\n") #both zero
+                f.write( curXIKL+" + "+curXIK+ " - " + curXIKL+"_Y"+str(i)+ " <=1\n") # both 1, _Y = 1
                 
-#               This ensures that if X_I_K is 1, X_I_K_L is 1, and vice versa
-                f.write("-"+curXIKL+" +"+curXIK+"<=0\n")
-                f.write( curXIKL+" +"+curXIK+"-" + curXIKL+"_"+str(i)+ "<=1\n")
+#               XIL must be 1 for XIKL to be 1
+                f.write("-"+curXIL+" + "+curXIKL+"<=0\n")
+                f.write( curXIKL+" +"+curXIL+"-" + curXIKL+"_Y"+str(i)+ "<=1\n")
                 
-#               This does the same for X_I_L
-                f.write("-"+curXIKL+" +"+curXIL+"<=0\n")
-                f.write( curXIKL+" +"+curXIL+"-" + curXIKL+"_"+str(i)+"2 <=1\n")
-                
-    #    #Link all bays with a gate 
-    #    for fl in Flight._registry:
-    #        for bay in Bay._registry:           
-    #            for i in range(len(bay.linkedGates)):
-    #                ga=bay.linkedGates[i]
-    #                curXIKL=str("X_I"+str(fl.number)+"_K"+str(bay.number)+"_L"+str(ga.number))
-    #                curXIK=str("X_I"+str(fl.number)+"_K"+str(bay.number))
-    #                curXIL=str("X_I"+str(fl.number)+"_L"+str(ga.number))
-    #                
-    ##               Sum of all XIKL for this bay = 1                
-    #                f.write(curXIKL)
-    #                
-    #                if i == len(bay.linkedGates):
-    #                    f.write(" = 1")
-    #                else:
-    #                    f.write(" + ")
-    
-    #Have all flights require a bay for full stay
+    #Have all flights require an XIKL (bay and gate)
     for fl in Flight._registry:
-        for bay in Bay._registry:
-            curVar=str("X_I"+str(fl.number)+"_K"+str(bay.number))
-            binlist.append(curVar)
-            f.write(curVar)
-            if int(bay.number)!=int(amountBays):
-                f.write(" + ") 
-            else:
-                f.write(" = 1 \n")     
+        for bay in Bay._registry:           
+            curXIK=str("X_I"+str(fl.number)+"_K"+str(bay.number))
+            
+            for i in range(len(bay.linkedGates)):
+
+                ga=bay.linkedGates[i]
+                curXIL=str("X_I"+str(fl.number)+"_L"+str(ga.number))                    
+                curXIKL=str("X_I"+str(fl.number)+"_K"+str(bay.number)+"_L"+str(ga.number))
                 
-#    #Have all flights require a gate for full stay
-    for fl in Flight._registry:
-        for ga in Gate._registry:
-            curVar=str("X_I"+str(fl.number)+"_L"+str(ga.number))
-            binlist.append(curVar)
-            f.write(curVar)
-            if int(ga.number)!=int(amountGates):
-                f.write(" + ") 
-            else:
-                f.write(" = 1 \n")            
+#               Sum of all XIKL for this flight = 1                
+                f.write(curXIKL)
+                if i != len(bay.linkedGates)-1:
+                    f.write(" + ")
+            if bay.number != amountBays: 
+                f.write(" + ")
+        f.write("= 1 \n")      
     
     #Time overlap constraint:        
     #For all overlapping flights, bays can only have one flight assigned:
@@ -341,7 +331,6 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
                 templist1.append(j)
                 stored_list.append(j)
             FF_compliance2.append(templist1)
-                
         else:
             templist1 = []
             for j in FF_compliance1[i]:
@@ -361,9 +350,6 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
                         if int(bay.number) != FF_compliance2[i][-1]:
                             f.write(" + ")
         
-    todo("An A bay would be usable by 1 A, 1B or 2C") #Cool but hard to implement
-    todo("A  B bay would be usable by 0 A, 1B or 1C")
-    todo("A  C bay would be usable by 0 A, 0B or 1C")
     f.write("\n")
     #Make parameters binary as needed
     
@@ -371,8 +357,13 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
     todo("Implement Refuel constraint")  #using bay.refuelBay (All bays currently able to refuel, change dataset to test)
     
     f.write("binary\n")
+    j=0
     for i in binlist:
         f.write(i+" ")
+        j+=1
+        if j == 40:
+            f.write("\n")
+            j = j-40
     #write end file
     f.write("\n")
     f.write("end")
@@ -408,7 +399,8 @@ for child in root[3]:
 a = np.zeros((amountFlights,amountGates))
 b = np.empty((amountFlights,amountGates), dtype=object)        
 c = np.zeros((amountFlights,amountBays))
-d = np.empty((amountFlights,amountBays), dtype=object)        
+d = np.empty((amountFlights,amountBays), dtype=object)  
+      
 for fl in Flight._registry:
     for ga in Gate._registry:
         i = fl.number-1
@@ -417,7 +409,7 @@ for fl in Flight._registry:
         findVar=solNameList.index(curVar)
         a[i,j]=solValueList[findVar]
         b[i,j]=solNameList[findVar]
-        if abs(int(solValueList[findVar]))==1:
+        if 0.999999 <= float(solValueList[findVar]) <= 1.0001:
             fl.assignGate(ga)
             
     for bay in Bay._registry:
@@ -433,6 +425,8 @@ for fl in Flight._registry:
 
 #Show dataset
 todo("Implement dataset mooie grafiekjes ")
+
+
 
 
 #Grafiekje solution:
@@ -456,3 +450,4 @@ todo("Implement busje")
 
         #e.g. 20 min on departure and 10 on arrival for gate, full time for bay.
 todo("Eventueel towing implementen (Naar andere bay als dat goedkoper is)")
+todo("Eventueel een A bay bezetbaar maken door 2 C planes")
