@@ -221,12 +221,17 @@ def plotTimetable(data, grid=0, xTickLabels=[], xTickSpacing=0,yTickLabels=True)
     #======================================================
     
     flList = []
+    flCountList = []
+    flPlottedList = []
     for i in range(len(data)):
         for j in range(len(data[i])):
             try:
                 ind = flList.index(data[i,j])
+                flCountList[ind]+=1
             except: 
                 flList.append(data[i,j])
+                flCountList.append(1)
+                
     
     #Set up figure
     width=len(data[0])
@@ -245,12 +250,13 @@ def plotTimetable(data, grid=0, xTickLabels=[], xTickSpacing=0,yTickLabels=True)
         ax.set_xticks(np.arange(0,width+1, 1)) #Set X tick spacing
         ax.set_yticks(np.arange(0,height+1, 1)) #Set Y tick spacing
         plt.grid(color='black') #Make lines less ugly
+        ax.set_axisbelow(True) #Grid UNDER other stuff
     
     if yTickLabels==True:
         yTicksList=[]
         for i in range(height):
             yTicksList.append("Gate "+str(i+1))
-        ax.axes.yaxis.set_ticklabels(yTicksList)
+            ax.axes.yaxis.set_ticklabels(yTicksList, fontsize = 14, va='top')
         
     #Process xTickLabels list into properly distributed list
     xTickLabelsProcessed=[] #List for the actual to be used labels
@@ -260,23 +266,14 @@ def plotTimetable(data, grid=0, xTickLabels=[], xTickSpacing=0,yTickLabels=True)
                 xTickLabelsProcessed.append(label)
                 for i in range(xTickSpacing):
                     xTickLabelsProcessed.append('')
-                ax.axes.xaxis.set_ticklabels(xTickLabelsProcessed)
+                ax.axes.xaxis.set_ticklabels(xTickLabelsProcessed, fontsize = 14)
         else:
             ax.axes.xaxis.set_ticklabels(xTickLabels)
-#            
-#        labels=len(xTickLabels) #Amount of labels to assign
-#        reqLabels=width+1 #Amount of tick labels needed
-#        mod=reqLabels%labels #Amount of spots after the last label
-#        r=labels/(reqLabels-mod) #Ratio between labels and required labels, used to find the amount of empty labels
-#        for i in range(labels): #For each input label:
-#            xTickLabelsProcessed.append(xTickLabels[i]) #Append the label
-#            for j in range(int(1/r)+1): #Append the required empty labels
-#                xTickLabelsProcessed.append('')
-#        for i in range(int(mod)):
-#            xTickLabelsProcessed.append('') #Apply the final empty values.
+
     ax.axes.xaxis.set_ticklabels(xTickLabelsProcessed) #assign the found list 
 
-    #Set up colors for y axis (Gates)
+    
+    #Set up colors for Flights
     #Colors are spaced over a rainbow color map, as far apart as possible for
     #the sake of clarity
     colors=[]
@@ -288,20 +285,26 @@ def plotTimetable(data, grid=0, xTickLabels=[], xTickSpacing=0,yTickLabels=True)
     for y, row in enumerate(data):
         for x, col in enumerate(row):
             #Get coordinators of corners for the square
-            x1 = [x, x+1]
             y1 = np.array([y, y])
             y2 = y1+1
             #If the list item is NOT zero, assign it.
             if col != 0: 
-                ind = flList.index(col)
-                plt.fill_between(x1, y1, y2=y2, color=colors[ind]) #Make colored square
-                plt.text((x1[0]+x1[1])/2, (y1[0]+y2[0])/2, #Place text, in center of square
-                         str(col),
-                         horizontalalignment='center',
-                         verticalalignment='center')
+                try:
+                    flPlottedList.index(col)
+                except:
+                    ind = flList.index(col)
+                    x1 = [x, x+flCountList[ind]]    
+                    ind = flList.index(col)
+                    block = plt.fill_between(x1, y1, y2=y2, color=colors[ind]) #Make colored square
+                    block.set_ec('black')
+                    plt.text((x1[0]+x1[1])/2, (y1[0]+y2[0])/2, #Place text, in center of square
+                             str(col),
+                             horizontalalignment='center',
+                             verticalalignment='center')
+                    flPlottedList.append(col)
     plt.show() #Victory
     
-def getTimetableMatrix(timeStart,timeEnd,amountGates):
+def getTimetableMatrix(timeStart,timeEnd,amountGates,showBay=0):
     tStart=timeTo5Min(timeStart)
     tEnd=timeTo5Min(timeEnd)
     dTime=tEnd-tStart
@@ -312,6 +315,9 @@ def getTimetableMatrix(timeStart,timeEnd,amountGates):
         ga=fl.assignedGate
         gaNum=ga.number
         gaInd=gaNum-1
+        savedText = str(fl.identifier) 
+        if showBay == 1:
+            savedText +=' - Bay ' + str(fl.assignedBay.number) 
         if t2 > dTime:
             t2=dTime
         if t1 <= 0 and t2 <= 0:
@@ -320,12 +326,12 @@ def getTimetableMatrix(timeStart,timeEnd,amountGates):
             #for assigned gate, assign flight identifier to gate
             #from slot 0 to slot t2
             for i in range(t2):
-                timeTableMatrix[gaInd,i]=fl.identifier
+                timeTableMatrix[gaInd,i]=savedText
         else: #if t1 >0, t2>0
             #for assigned gate, assign flight identifier to gate
             #from slot 1 to slot t2
             for i in range(t1,t2):
-                timeTableMatrix[gaInd,i]=fl.identifier
+                timeTableMatrix[gaInd,i]=savedText
     return timeTableMatrix
 
 

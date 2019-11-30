@@ -14,18 +14,17 @@ import matplotlib.pyplot as plt
 plt.close("all")
 
 #Use the old nonrandomized data (0/1)
-staticDataSet = 1
+staticDataSet = 0
 
 #If 0, generate random dataset with following properties:
 timeStart = "11am"
-timeEnd = "4pm"
+timeEnd = "3pm"
 flightsWanted= 20
 
 #plot results?
 plotResults = 1
-plotTimeStart = "5pm" #in full hours #5pm for static
-plotTimeEnd = "10pm" #in full hours #11pm for static
-
+plotTimeStart = "11am" #in full hours #5pm for static
+plotTimeEnd = "4pm" #in full hours #11pm for static
 
 #Terminal(name,openEvening,distance)
 t1 = Terminal("A",True,250)
@@ -422,10 +421,8 @@ for fl in Flight._registry:
         if abs(int(solValueList[findVar]))==1:
             fl.assignBay(bay)
 
-
 #Show dataset
 todo("Implement dataset mooie grafiekjes ")
-
 
 #Grafiekje solution:
 t=['12am','1am','2am', '3am', '4am', '5am', '6am', '7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm', '7pm', '8pm', '9pm', '10pm', '11pm', '12am']
@@ -436,7 +433,7 @@ tStartIndex = tTo5Min.index(timeTo5Min(plotTimeStart))
 tEndIndex   = tTo5Min.index(timeTo5Min(plotTimeEnd))
 
 #getTimetableMatrix(timeStart,timeEnd,amountGates)
-timetableMatrix=getTimetableMatrix(t[tStartIndex],t[tEndIndex],amountGates)
+timetableMatrix=getTimetableMatrix(t[tStartIndex],t[tEndIndex],amountGates,1)
 #plotTimeTable
 plotTimetable(timetableMatrix,1,xTickLabels=t[tStartIndex:tEndIndex+1],xTickSpacing=11,yTickLabels=True)
 
