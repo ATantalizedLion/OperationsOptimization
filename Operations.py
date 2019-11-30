@@ -24,7 +24,7 @@ flightsWanted= 20
 #plot results?
 plotResults = 1
 plotTimeStart = "5pm" #in full hours #5pm for static
-plotTimeEnd = "11pm" #in full hours #11pm for static
+plotTimeEnd = "10pm" #in full hours #11pm for static
 
 
 #Terminal(name,openEvening,distance)
@@ -425,8 +425,6 @@ for fl in Flight._registry:
 
 #Show dataset
 todo("Implement dataset mooie grafiekjes ")
-
-
 
 
 #Grafiekje solution:

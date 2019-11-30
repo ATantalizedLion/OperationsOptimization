@@ -220,6 +220,14 @@ def plotTimetable(data, grid=0, xTickLabels=[], xTickSpacing=0,yTickLabels=True)
     #yTicks adds ticks with Gate 1, 2 etc. to the side, requires Grid=1
     #======================================================
     
+    flList = []
+    for i in range(len(data)):
+        for j in range(len(data[i])):
+            try:
+                ind = flList.index(data[i,j])
+            except: 
+                flList.append(data[i,j])
+    
     #Set up figure
     width=len(data[0])
     height=len(data)
@@ -273,8 +281,8 @@ def plotTimetable(data, grid=0, xTickLabels=[], xTickSpacing=0,yTickLabels=True)
     #the sake of clarity
     colors=[]
     cm = plt.get_cmap('gist_rainbow')
-    for i in range(height):
-        colors.append(cm(1.*i/height))    
+    for i in range(len(flList)):
+        colors.append(cm(1.*i/len(flList)))    
     
     #Finally make the actual plot
     for y, row in enumerate(data):
@@ -285,7 +293,8 @@ def plotTimetable(data, grid=0, xTickLabels=[], xTickSpacing=0,yTickLabels=True)
             y2 = y1+1
             #If the list item is NOT zero, assign it.
             if col != 0: 
-                plt.fill_between(x1, y1, y2=y2, color=colors[y]) #Make colored square
+                ind = flList.index(col)
+                plt.fill_between(x1, y1, y2=y2, color=colors[ind]) #Make colored square
                 plt.text((x1[0]+x1[1])/2, (y1[0]+y2[0])/2, #Place text, in center of square
                          str(col),
                          horizontalalignment='center',
