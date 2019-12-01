@@ -101,17 +101,17 @@ if staticDataSet == 1:
     fl2 = Flight("JFK26", 100, "5:55pm", "7:05pm","C",Delta)
     fl3 = Flight("JFK27", 100, "6:05pm", "7:10pm","C",BritishAirways)
     fl4 = Flight("JFK28", 300, "6pm", "6:30pm","C",Transavia)
-#    fl5 = Flight("JFK29", 100, "6:25pm", "7:20pm","C",Transavia)
-#    fl6 = Flight("JFK31", 300, "6:35pm", "7:45pm","A",Transavia)
-#    fl7 = Flight("JFK35", 100, "7:15pm", "8:55pm","C",KLM)
-#    fl8 = Flight("JFK36", 300, "7:30pm", "9:05pm","A",Transavia)
-#    fl9 = Flight("DOM37", 100, "7:45pm", "9:20pm","C",BritishAirways, domestic=1)
-#    fl10 = Flight("DOM38", 200, "8:15pm", "10:05pm","B",EasyJet,domestic = 1)
-#    fl11 = Flight("JFK32", 200, "5:10pm", "5:55pm","B",KLM)
-#    fl12 = Flight("JFK33", 100, "5:30pm", "5:05pm","C",KLM)
-#    fl13 = Flight("JFK34", 200, "8:05pm", "8:45pm","B",KLM)
-#    fl14 = Flight("JFK30", 100, "6:30pm", "7:30pm","C",AirFrance)
-#    fl15 = Flight("DOM23", 300, "5:15pm","6pm","A",KLM,domestic=1)
+    fl5 = Flight("JFK29", 100, "6:25pm", "7:20pm","C",Transavia)
+    fl6 = Flight("JFK31", 300, "6:35pm", "7:45pm","A",Transavia)
+    fl7 = Flight("JFK35", 100, "7:15pm", "8:55pm","C",KLM)
+    fl8 = Flight("JFK36", 300, "7:30pm", "9:05pm","A",Transavia)
+    fl9 = Flight("DOM37", 100, "7:45pm", "9:20pm","C",BritishAirways, domestic=1)
+    fl10 = Flight("DOM38", 200, "8:15pm", "10:05pm","B",EasyJet,domestic = 1)
+    fl11 = Flight("JFK32", 200, "5:10pm", "5:55pm","B",KLM)
+    fl12 = Flight("JFK33", 100, "5:30pm", "5:05pm","C",KLM)
+    fl13 = Flight("JFK34", 200, "8:05pm", "8:45pm","B",KLM)
+    fl14 = Flight("JFK30", 100, "6:30pm", "7:30pm","C",AirFrance)
+    fl15 = Flight("DOM23", 300, "5:15pm","6pm","A",KLM,domestic=1)
 else:
     getFlights(flightsWanted,timeStart,timeEnd)
     
@@ -356,9 +356,9 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
     FF_all = []
     FF_compliance1 = []
     FF_compliance2 = []
-    for fl in Flight._registry:
-        if fl.formFactor not in FF_all:
-            FF_all.append(fl.formFactor)
+    for bay in Bay._registry:
+        if bay.formFactor not in FF_all:
+            FF_all.append(bay.formFactor)
             
     for i in range(len(FF_all)): 
         lst = []
