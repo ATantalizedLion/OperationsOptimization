@@ -106,12 +106,10 @@ def generateRunFiles(lpFileName):
     p = Popen(BatPath)
     p.wait()
     
-    
     #cleanUpCCFandBAT:
     remove(BatPath)
     remove(CCFPath)
     return SOLPath
-
 
 class Terminal(object):
         _registry = [] #Keep track of all instances
@@ -165,7 +163,7 @@ class Flight(object):
         _registry = [] #Keep track of all instances
         domFlights = 0 #amount of domestic flights
         finalDomFlight = 0 #Number of the last domestic flight
-        
+
         def __init__(self,identifier,passengers,arrivalTime,departureTime,formFactor,airline,assignedGate=0,domestic=0):
             self._registry.append(self) #Add this flight to list of flights
             self.number=len(Flight._registry) #Give flight a number
@@ -186,9 +184,11 @@ class Flight(object):
             self.timeSlotEndBuffer = timeTo5Min(departureTime)+2
             
             #for arrival emptying the aircraft is taken to take 15 minutes
-            self.timeSlotEndArr = self.timeSlotBegin + 3 #End of arrival/end of boarding time slot
+            self.timeSlotStartEmpty = self.timeSlotBegin + 0 #End of arrival/end of boarding time slot
+            self.timeSlotEndEmpty = self.timeSlotBegin + 3 #End of arrival/end of boarding time slot
             #boarding is taken to take 30 minutes
-            self.timeSlotStartDep = self.timeSlotEnd - 6 #Start of boarding
+            self.timeSlotStartBoard = self.timeSlotEnd - 3 #Start of boarding
+            self.timeSlotEndBoard = self.timeSlotEnd #Start of boarding
             
             #Get gatepref of related airline
             if airline.gatePref != 0:
@@ -219,7 +219,6 @@ def plotTimetable(data, grid=0, xTickLabels=[], xTickSpacing=0,yTickLabels=True)
     #
     #yTicks adds ticks with Gate 1, 2 etc. to the side, requires Grid=1
     #======================================================
-    
     flList = []
     flCountList = []
     flPlottedList = []
@@ -232,7 +231,6 @@ def plotTimetable(data, grid=0, xTickLabels=[], xTickSpacing=0,yTickLabels=True)
                 flList.append(data[i,j])
                 flCountList.append(1)
                 
-    
     #Set up figure
     width=len(data[0])
     height=len(data)
@@ -271,7 +269,6 @@ def plotTimetable(data, grid=0, xTickLabels=[], xTickSpacing=0,yTickLabels=True)
             ax.axes.xaxis.set_ticklabels(xTickLabels)
 
     ax.axes.xaxis.set_ticklabels(xTickLabelsProcessed) #assign the found list 
-
     
     #Set up colors for Flights
     #Colors are spaced over a rainbow color map, as far apart as possible for
@@ -303,7 +300,7 @@ def plotTimetable(data, grid=0, xTickLabels=[], xTickSpacing=0,yTickLabels=True)
                              verticalalignment='center')
                     flPlottedList.append(col)
     plt.show() #Victory
-    
+
 def getTimetableMatrix(timeStart,timeEnd,amountGates,showBay=0):
     tStart=timeTo5Min(timeStart)
     tEnd=timeTo5Min(timeEnd)

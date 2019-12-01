@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 plt.close("all")
 
 #Use the old nonrandomized data (0/1)
-staticDataSet = 0
+staticDataSet = 1
 
 #If 0, generate random dataset with following properties:
 timeStart = "11am"
@@ -23,8 +23,8 @@ flightsWanted= 20
 
 #plot results?
 plotResults = 1
-plotTimeStart = "11am" #in full hours #5pm for static
-plotTimeEnd = "4pm" #in full hours #11pm for static
+plotTimeStart = "5pm" #in full hours #5pm for static
+plotTimeEnd = "9pm" #in full hours #11pm for static
 
 #Terminal(name,openEvening,distance)
 t1 = Terminal("A",True,250)
@@ -101,17 +101,17 @@ if staticDataSet == 1:
     fl2 = Flight("JFK26", 100, "5:55pm", "7:05pm","C",Delta)
     fl3 = Flight("JFK27", 100, "6:05pm", "7:10pm","C",BritishAirways)
     fl4 = Flight("JFK28", 300, "6pm", "6:30pm","C",Transavia)
-    fl5 = Flight("JFK29", 100, "6:25pm", "7:20pm","C",Transavia)
-    fl6 = Flight("JFK31", 300, "6:35pm", "7:45pm","A",Transavia)
-    fl7 = Flight("JFK35", 100, "7:15pm", "8:55pm","C",KLM)
-    fl8 = Flight("JFK36", 300, "7:30pm", "9:05pm","A",Transavia)
-    fl9 = Flight("DOM37", 100, "7:45pm", "9:20pm","C",BritishAirways, domestic=1)
-    fl10 = Flight("DOM38", 200, "8:15pm", "10:05pm","B",EasyJet,domestic = 1)
-    fl11 = Flight("JFK32", 200, "5:10pm", "5:55pm","B",KLM)
-    fl12 = Flight("JFK33", 100, "5:30pm", "5:05pm","C",KLM)
-    fl13 = Flight("JFK34", 200, "8:05pm", "8:45pm","B",KLM)
-    fl14 = Flight("JFK30", 100, "6:30pm", "7:30pm","C",AirFrance)
-    fl15 = Flight("DOM23", 300, "5:15pm","6pm","A",KLM,domestic=1)
+#    fl5 = Flight("JFK29", 100, "6:25pm", "7:20pm","C",Transavia)
+#    fl6 = Flight("JFK31", 300, "6:35pm", "7:45pm","A",Transavia)
+#    fl7 = Flight("JFK35", 100, "7:15pm", "8:55pm","C",KLM)
+#    fl8 = Flight("JFK36", 300, "7:30pm", "9:05pm","A",Transavia)
+#    fl9 = Flight("DOM37", 100, "7:45pm", "9:20pm","C",BritishAirways, domestic=1)
+#    fl10 = Flight("DOM38", 200, "8:15pm", "10:05pm","B",EasyJet,domestic = 1)
+#    fl11 = Flight("JFK32", 200, "5:10pm", "5:55pm","B",KLM)
+#    fl12 = Flight("JFK33", 100, "5:30pm", "5:05pm","C",KLM)
+#    fl13 = Flight("JFK34", 200, "8:05pm", "8:45pm","B",KLM)
+#    fl14 = Flight("JFK30", 100, "6:30pm", "7:30pm","C",AirFrance)
+#    fl15 = Flight("DOM23", 300, "5:15pm","6pm","A",KLM,domestic=1)
 else:
     getFlights(flightsWanted,timeStart,timeEnd)
     
@@ -123,6 +123,34 @@ for fl in Flight._registry:
         overlap = int(fl.timeSlotEndBuffer) - int(fl2.timeSlotBeginBuffer)
         if overlap >= 0 and int(fl2.timeSlotEndBuffer) > int(fl.timeSlotBeginBuffer):
             timemat[i][j] = 1
+        j += 1
+    i += 1
+    
+timematArr = np.zeros((len(Flight._registry),len(Flight._registry))) #Generating time overlap matrix for full stay of aircraft
+i = 0
+for fl in Flight._registry:
+    j = 0
+    for fl2 in Flight._registry:
+        overlap = int(fl.timeSlotEndEmpty) - int(fl2.timeSlotStartBoard)
+        if overlap >= 0 and int(fl2.timeSlotEndBoard) > int(fl.timeSlotStartEmpty):
+            timematArr[i][j] = 1
+        overlap2 = int(fl.timeSlotEndEmpty) - int(fl2.timeSlotStartEmpty)
+        if overlap2 >= 0 and int(fl2.timeSlotEndEmpty) > int(fl.timeSlotStartEmpty):
+            timematArr[i][j] = 1
+        j += 1
+    i += 1
+
+timematDep = np.zeros((len(Flight._registry),len(Flight._registry))) #Generating time overlap matrix for full stay of aircraft
+i = 0
+for fl in Flight._registry:
+    j = 0
+    for fl2 in Flight._registry:
+        overlap = int(fl.timeSlotEndBoard) - int(fl2.timeSlotStartBoard)
+        if overlap >= 0 and int(fl2.timeSlotEndBoard) > int(fl.timeSlotStartBoard):
+            timematDep[i][j] = 1
+        overlap2 = int(fl.timeSlotEndBoard) - int(fl2.timeSlotStartEmpty)
+        if overlap2 >= 0 and int(fl2.timeSlotEndEmpty) > int(fl.timeSlotStartBoard):
+            timematDep[i][j] = 1
         j += 1
     i += 1
 
@@ -194,7 +222,6 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
                gaDist=bay.linkedGatesDistances[i] 
                f.write(str(fl.passengers*gaDist))
                f.write(" X_I"+str(fl.number)+"_K"+str(bay.number)+"_L"+str(ga.number))
-#               binlist.append("X_I"+str(fl.number)+"_K"+str(bay.number)+"_L"+str(ga.number))
                if int(fl.number)!=int(amountFlights) or int(bay.number)!=int(amountBays) or i+1!=len(bay.linkedGates):
                   f.write(" + ") 
                else:
@@ -236,27 +263,24 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
                 curXIKL=str("X_I"+str(fl.number)+"_K"+str(bay.number)+"_L"+str(ga.number))
                 curXIK=str("X_I"+str(fl.number)+"_K"+str(bay.number))
                 curXIL=str("X_I"+str(fl.number)+"_L"+str(ga.number))
-
 #               Either or constraints, as is depicted in slides.    
 #               x1 must be 1 for x2 to be 1 
 #               -x1+x2<=0
 #               x1+x2-y1<=1                
-
+                
 #               XIK must be 1 for XIKL to be 1
                 f.write("-"+curXIK+" + "+curXIKL+" <=0\n") #both zero
                 f.write( curXIKL+" + "+curXIK+ " - " + curXIKL+"_Y"+str(i)+ " <=1\n") # both 1, _Y = 1
                 
 #               XIL must be 1 for XIKL to be 1
-                f.write("-"+curXIL+" + "+curXIKL+"<=0\n")
-                f.write( curXIKL+" +"+curXIL+"-" + curXIKL+"_Y"+str(i)+ "<=1\n")
+                f.write("-"+curXIL+" + "+curXIKL+" <=0\n")
+                f.write( curXIKL+" +"+curXIL+"-" + curXIKL+"_Y"+str(i)+ " <=1\n")
                 
     #Have all flights require an XIKL (bay and gate)
     for fl in Flight._registry:
         for bay in Bay._registry:           
             curXIK=str("X_I"+str(fl.number)+"_K"+str(bay.number))
-            
             for i in range(len(bay.linkedGates)):
-
                 ga=bay.linkedGates[i]
                 curXIL=str("X_I"+str(fl.number)+"_L"+str(ga.number))                    
                 curXIKL=str("X_I"+str(fl.number)+"_K"+str(bay.number)+"_L"+str(ga.number))
@@ -328,9 +352,7 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
                     else:
                         f.write(flight1var + " + ")
                         
-#0    f.write("X_AAAAAAA + X_BBBBBBB = 0 \n")
-
-    #Bay constraint 2: or Form factor constraint: (Compliance of a/c formfactor to bay/gate)
+#    #Bay constraint 2: or Form factor constraint: (Compliance of a/c formfactor to bay/gate)
     FF_all = []
     FF_compliance1 = []
     FF_compliance2 = []
@@ -372,7 +394,6 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
                             f.write(" = 1 \n")
                         if int(bay.number) != FF_compliance2[i][-1]:
                             f.write(" + ")
-        
     f.write("\n")
     #Make parameters binary as needed
     
