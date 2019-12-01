@@ -7,7 +7,7 @@ Created on Thu Nov 14 16:21:08 2019
 
 #import matplotlib.pyplot as plt
 import numpy as np
-from OOFunc import generateRunFiles, timeTo5Min, fiveMinToTime, getTimetableMatrix, plotTimetable, Flight, Airline, Airport, Gate, Terminal, Bay, todo, getFlights
+from OOFunc import generateRunFiles, timeTo5Min, fiveMinToTime, getTimetableMatrixGates, plotTimetable, getTimetableMatrixBays, Flight, Airline, Airport, Gate, Terminal, Bay, todo, getFlights
 import xml.etree.ElementTree as ET
 import matplotlib.pyplot as plt
 
@@ -131,11 +131,11 @@ i = 0
 for fl in Flight._registry:
     j = 0
     for fl2 in Flight._registry:
-        overlap = int(fl.timeSlotEndEmpty) - int(fl2.timeSlotStartBoard)
-        if overlap >= 0 and int(fl2.timeSlotEndBoard) > int(fl.timeSlotStartEmpty):
+        overlap = int(fl.timeSlotEndEmpty) - int(fl2.timeSlotBeginBoard)
+        if overlap >= 0 and int(fl2.timeSlotEndBoard) > int(fl.timeSlotBeginEmpty):
             timematArr[i][j] = 1
-        overlap2 = int(fl.timeSlotEndEmpty) - int(fl2.timeSlotStartEmpty)
-        if overlap2 >= 0 and int(fl2.timeSlotEndEmpty) > int(fl.timeSlotStartEmpty):
+        overlap2 = int(fl.timeSlotEndEmpty) - int(fl2.timeSlotBeginEmpty)
+        if overlap2 >= 0 and int(fl2.timeSlotEndEmpty) > int(fl.timeSlotBeginEmpty):
             timematArr[i][j] = 1
         j += 1
     i += 1
@@ -145,11 +145,11 @@ i = 0
 for fl in Flight._registry:
     j = 0
     for fl2 in Flight._registry:
-        overlap = int(fl.timeSlotEndBoard) - int(fl2.timeSlotStartBoard)
-        if overlap >= 0 and int(fl2.timeSlotEndBoard) > int(fl.timeSlotStartBoard):
+        overlap = int(fl.timeSlotEndBoard) - int(fl2.timeSlotBeginBoard)
+        if overlap >= 0 and int(fl2.timeSlotEndBoard) > int(fl.timeSlotBeginBoard):
             timematDep[i][j] = 1
-        overlap2 = int(fl.timeSlotEndBoard) - int(fl2.timeSlotStartEmpty)
-        if overlap2 >= 0 and int(fl2.timeSlotEndEmpty) > int(fl.timeSlotStartBoard):
+        overlap2 = int(fl.timeSlotEndBoard) - int(fl2.timeSlotBeginEmpty)
+        if overlap2 >= 0 and int(fl2.timeSlotEndEmpty) > int(fl.timeSlotBeginBoard):
             timematDep[i][j] = 1
         j += 1
     i += 1
@@ -244,7 +244,7 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
             else:
                 f.write(" = 1 \n")     
                 
-#    #Have all flights require a gate for full stay
+#    #Have all flights require a gate
     for fl in Flight._registry:
         for ga in Gate._registry:
             curVar=str("X_I"+str(fl.number)+"_L"+str(ga.number))
@@ -308,7 +308,14 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
     #Time overlap constraint: For gates.                    
     for i in range(len(timemat)):
         for j in range(i):
-            if timemat[i,j]==1:
+            if timematArr[i,j]==1:
+                flight1=Flight._registry[i]
+                flight2=Flight._registry[j]
+                for gate in Gate._registry:
+                    flight1var=str("X_I"+str(flight1.number)+"_L"+str(gate.number))
+                    flight2var=str("X_I"+str(flight2.number)+"_L"+str(gate.number))
+                    f.write(flight1var + " + " + flight2var + " <= 1 \n") 
+            if timematDep[i,j]==1:
                 flight1=Flight._registry[i]
                 flight2=Flight._registry[j]
                 for gate in Gate._registry:
@@ -316,7 +323,6 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
                     flight2var=str("X_I"+str(flight2.number)+"_L"+str(gate.number))
                     f.write(flight1var + " + " + flight2var + " <= 1 \n") 
                 
-    f.write("X_AAAAAA + X_BBBBBB = 0 \n")
     #Gate constrain 1: # domestic flights to domestic gates, vice versa
     #Domestic flights at domestic gates
     #Sum of domestic gates per domestic flight = 1. 
@@ -478,9 +484,11 @@ tStartIndex = tTo5Min.index(timeTo5Min(plotTimeStart))
 tEndIndex   = tTo5Min.index(timeTo5Min(plotTimeEnd))
 
 #getTimetableMatrix(timeStart,timeEnd,amountGates)
-timetableMatrix=getTimetableMatrix(t[tStartIndex],t[tEndIndex],amountGates,1)
+timetableMatrix=getTimetableMatrixGates(t[tStartIndex],t[tEndIndex],amountGates)
+#timetableMatrix2=getTimetableMatrixBays(t[tStartIndex],t[tEndIndex],amountBays,1)
 #plotTimeTable
 plotTimetable(timetableMatrix,1,xTickLabels=t[tStartIndex:tEndIndex+1],xTickSpacing=11,yTickLabels=True)
+#plotTimetable(timetableMatrix2,1,xTickLabels=t[tStartIndex:tEndIndex+1],xTickSpacing=11,yTickLabels=True,bays=1)
 
 
 #Bonus:
