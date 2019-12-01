@@ -32,7 +32,7 @@ t2 = Terminal("B",True,610)
 t3 = Terminal("C",True,460)
 t4 = Terminal("D",False,100)
 
-#Gate(terminal,domesticFlight,distanceToTerminal)
+#Gate(terminal,domesticGate,distanceToTerminal)
 g1 = Gate(t1,True,100)
 g2 = Gate(t1,False,100)
 g3 = Gate(t1,True,300)
@@ -205,7 +205,29 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
 
     #generate constraints
     f.write("Subject to:\n")
-    
+        
+    #Have all flights require a bay for full stay
+    for fl in Flight._registry:
+        for bay in Bay._registry:
+            curVar=str("X_I"+str(fl.number)+"_K"+str(bay.number))
+            binlist.append(curVar)
+            f.write(curVar)
+            if int(bay.number)!=int(amountBays):
+                f.write(" + ") 
+            else:
+                f.write(" = 1 \n")     
+                
+#    #Have all flights require a gate for full stay
+    for fl in Flight._registry:
+        for ga in Gate._registry:
+            curVar=str("X_I"+str(fl.number)+"_L"+str(ga.number))
+            binlist.append(curVar)
+            f.write(curVar)
+            if int(ga.number)!=int(amountGates):
+                f.write(" + ") 
+            else:
+                f.write(" = 1 \n")           
+                
     #Link X_I_K_L with X_I_K and X_I_L
     for fl in Flight._registry: #X_I
         for bay in Bay._registry:  #X_I_L        
@@ -270,11 +292,12 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
                     flight2var=str("X_I"+str(flight2.number)+"_L"+str(gate.number))
                     f.write(flight1var + " + " + flight2var + " <= 1 \n") 
                 
-    
+    f.write("X_AAAAAA + X_BBBBBB = 0 \n")
     #Gate constrain 1: # domestic flights to domestic gates, vice versa
-    #Domestic flights not at domestic gates
+    #Domestic flights at domestic gates
+    #Sum of domestic gates per domestic flight = 1. 
     for fl in Flight._registry:
-        if fl.domestic != 0:
+        if fl.domestic == True:
             for ga in Gate._registry:
                 if ga.domesticGate == True:
                     curVar = str("X_I"+str(fl.number)+"_L"+str(ga.number))
@@ -282,9 +305,10 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
                         f.write(curVar + " = 1 \n")
                     else:
                         f.write(curVar + " + ")
-    #international flights not at domestic gates
+    #International flights not at domestic gates
+    #Sum of domestic gates per international flight = 0
     for fl in Flight._registry:
-        if fl.domestic == 0:
+        if fl.domestic == False:
             for ga in Gate._registry:
                 if ga.domesticGate == True:
                     curVar = str("X_I" + str(fl.number) + "_L" + str(ga.number))
@@ -292,7 +316,6 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
                         f.write(curVar + " = 0 \n")
                     else:
                         f.write(curVar + " + ")
-
 
     #Gate constrain 2: # ensures flights after 8 pm are not in gates closed after that hour
     for fl in Flight._registry:
@@ -304,9 +327,10 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
                         f.write(flight1var + " = 0 \n")                        
                     else:
                         f.write(flight1var + " + ")
+                        
+#0    f.write("X_AAAAAAA + X_BBBBBBB = 0 \n")
 
     #Bay constraint 2: or Form factor constraint: (Compliance of a/c formfactor to bay/gate)
-    
     FF_all = []
     FF_compliance1 = []
     FF_compliance2 = []
@@ -418,7 +442,7 @@ for fl in Flight._registry:
         findVar=solNameList.index(curVar)
         c[i,j]=solValueList[findVar]
         d[i,j]=solNameList[findVar]
-        if abs(int(solValueList[findVar]))==1:
+        if 0.999999 <= float(solValueList[findVar]) <= 1.0001:
             fl.assignBay(bay)
 
 #Show dataset
