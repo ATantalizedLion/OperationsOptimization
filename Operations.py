@@ -7,7 +7,7 @@ Created on Thu Nov 14 16:21:08 2019
 
 #import matplotlib.pyplot as plt
 import numpy as np
-from OOFunc import generateRunFiles, timeTo5Min, fiveMinToTime, getTimetableMatrixGates, plotTimetable, getTimetableMatrixBays, Flight, Airline, Airport, Gate, Terminal, Bay, todo, getFlights
+from OOFunc import generateRunFiles, timeTo5Min, fiveMinToTime, getTimetableMatrixGates, plotTimetableBays, plotTimetableGates, getTimetableMatrixBays, Flight, Airline, Airport, Gate, Terminal, Bay, todo, getFlights
 import xml.etree.ElementTree as ET
 import matplotlib.pyplot as plt
 
@@ -23,7 +23,7 @@ flightsWanted= 20
 
 #plot results?
 plotResults = 1
-plotTimeStart = "5pm" #in full hours #5pm for static
+plotTimeStart = "4pm" #in full hours #5pm for static
 plotTimeEnd = "9pm" #in full hours #11pm for static
 
 #Terminal(name,openEvening,distance)
@@ -180,9 +180,6 @@ for fl in Flight._registry:
 #RUN CPlex
     #Take input flights and generate LP file
     
-todo("Currently the time matrix works for bays but not terminals")
-todo("E.g. bay occupied for full time aircraft is at airport, terminal occupied for 15 minutes before and after arrival/departure")
-
 todo("Implement objective function weights and priorities (currently they are pretty random)") 
 
 with open("LPFiles\SecondIteration.lp","w+") as f:
@@ -485,10 +482,10 @@ tEndIndex   = tTo5Min.index(timeTo5Min(plotTimeEnd))
 
 #getTimetableMatrix(timeStart,timeEnd,amountGates)
 timetableMatrix=getTimetableMatrixGates(t[tStartIndex],t[tEndIndex],amountGates)
-#timetableMatrix2=getTimetableMatrixBays(t[tStartIndex],t[tEndIndex],amountBays,1)
+timetableMatrix2=getTimetableMatrixBays(t[tStartIndex],t[tEndIndex],amountBays,1)
 #plotTimeTable
-plotTimetable(timetableMatrix,1,xTickLabels=t[tStartIndex:tEndIndex+1],xTickSpacing=11,yTickLabels=True)
-#plotTimetable(timetableMatrix2,1,xTickLabels=t[tStartIndex:tEndIndex+1],xTickSpacing=11,yTickLabels=True,bays=1)
+plotTimetableGates(timetableMatrix,1,xTickLabels=t[tStartIndex:tEndIndex+1],xTickSpacing=11,yTickLabels=True)
+plotTimetableBays(timetableMatrix2,1,xTickLabels=t[tStartIndex:tEndIndex+1],xTickSpacing=11,yTickLabels=True,bays=1)
 
 
 #Bonus:
