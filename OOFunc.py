@@ -526,8 +526,9 @@ def getFlights(flightsWanted,timeStart,timeEnd):
     #Does so with arrival time between timeStart and timeEnd
     timeStart = timeTo5Min(timeStart)
     timeEnd = timeTo5Min(timeEnd)
+    f = open("lastGeneratedDataset.py","w+")
+    f.write("from OOFunc import Flight, Airline\n\n")
     for i in range(flightsWanted):
-    #    random.seed('givemeflights')
         air = Airport._registry[random.randint(0,len(Airport._registry)-1)]
         flName=str(air.shortName+str(i+1)) #retrieve name from airport object:
         flAirline=  Airline._registry[random.randint(0,len(Airline._registry)-1)]
@@ -536,7 +537,11 @@ def getFlights(flightsWanted,timeStart,timeEnd):
             flFF = "C"
             flDomestic=True
         if air.distanceCategory==1:
-            flFF = "B"
+            r = random.randint(0,1)
+            if r == 0:
+                flFF = "B"
+            else: 
+                flFF = "C"
             flDomestic=True
         if air.distanceCategory==2:
             r = random.randint(0,1)
@@ -574,10 +579,12 @@ def getFlights(flightsWanted,timeStart,timeEnd):
             flPass = random.randrange(50,150)
         
         #work in 5 min slots
-    
         flArr = random.randrange(timeStart,timeEnd)
         flDep = flArr + random.randint(6,24) # stays 20 to 120 minutes
     
         Flight(flName, flPass, fiveMinToTime(flArr), fiveMinToTime(flDep), flFF, flAirline,domestic=flDomestic)
+        
+        f.write("Flight('"+str(flName)+"', "+str(flPass)+", '"+str(fiveMinToTime(flArr))+"', '"+str(fiveMinToTime(flDep))+"', '"+str(flFF)+"', Airline._registry["+str(flAirline.number-1)+"], domestic="+str(flDomestic)+")\n")
+    f.close()
     return
 

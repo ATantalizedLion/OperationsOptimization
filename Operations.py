@@ -14,7 +14,8 @@ import matplotlib.pyplot as plt
 plt.close("all")
 
 #Use the old nonrandomized data (0/1)
-staticDataSet = 1
+#Use 2 to run the last generated data set again
+staticDataSet = 2
 
 #If 0, generate random dataset with following properties:
 timeStart = "11am"
@@ -23,8 +24,8 @@ flightsWanted= 20
 
 #plot results?
 plotResults = 1
-plotTimeStart = "4pm" #in full hours #5pm for static
-plotTimeEnd = "9pm" #in full hours #11pm for static
+plotTimeStart = "11am" #in full hours #5pm for static
+plotTimeEnd = "3pm" #in full hours #11pm for static
 
 #Terminal(name,openEvening,distance)
 t1 = Terminal("A",True,250)
@@ -56,7 +57,7 @@ b3 = Bay([g2,g4],[100,150],"B")
 b4 = Bay([g2,g4],[150,100],"B")
 
 b5 = Bay([g5,g6],[150,100],"A")
-b6 = Bay([g5,g6],[100,150],"A",refuelBay=True)
+b6 = Bay([g5,g6],[100,150],"A")
 b7 = Bay([g6,g7],[150,100],"A")
 b8 = Bay([g6,g7],[100,150],"A")
 
@@ -115,6 +116,8 @@ if staticDataSet == 1:
     fl13 = Flight("JFK34", 200, "8:05pm", "8:45pm","B",KLM)
     fl14 = Flight("JFK30", 100, "6:30pm", "7:30pm","C",AirFrance)
     fl15 = Flight("DOM23", 300, "5:15pm","6pm","A",KLM,domestic=1)
+elif staticDataSet == 2:
+    import lastGeneratedDataset
 else:
     getFlights(flightsWanted,timeStart,timeEnd)
     
@@ -142,7 +145,7 @@ for fl in Flight._registry:
             timematArr[i][j] = 1
         j += 1
     i += 1
-
+    
 timematDep = np.zeros((len(Flight._registry),len(Flight._registry))) #Generating time overlap matrix for full stay of aircraft
 i = 0
 for fl in Flight._registry:
@@ -189,8 +192,7 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
 
     #generate Objective
     f.write("Minimize multi-objectives\n") #Z1 = sum_i sum_k Pi*Xi,k*Dterm_k
-    f.write("OBJ1: Priority=4 Weight=1.0 Abstol=0.0 Reltol=0.0\n\n") #Choose gate closest to terminal exit, weighed by passengers in flight
-    
+    f.write("OBJ1: Priority=2 Weight=1.0 Abstol=0.0 Reltol=0.0\n\n") #Choose gate closest to terminal exit, weighed by passengers in flight
     
     for fl in Flight._registry:
         for ga in Gate._registry:
@@ -214,7 +216,7 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
 
     f.write("\n")
     f.write("\n")    
-    f.write("OBJ3: Priority=2 Weight=1.0 Abstol=0.0 Reltol=0.0\n\n") #Minimize gate - bay distance , weighed by passengers in flight
+    f.write("OBJ3: Priority=4 Weight=1.0 Abstol=0.0 Reltol=0.0\n\n") #Minimize gate - bay distance , weighed by passengers in flight
     for fl in Flight._registry:
         for bay in Bay._registry:
            for i in range(len(bay.linkedGates)):
@@ -237,7 +239,6 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
     for fl in Flight._registry:
         for bay in Bay._registry:
             curVar=str("X_I"+str(fl.number)+"_K"+str(bay.number))
-            binlist.append(curVar)
             f.write(curVar)
             if int(bay.number)!=int(amountBays):
                 f.write(" + ") 
@@ -248,12 +249,11 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
     for fl in Flight._registry:
         for ga in Gate._registry:
             curVar=str("X_I"+str(fl.number)+"_L"+str(ga.number))
-            binlist.append(curVar)
             f.write(curVar)
             if int(ga.number)!=int(amountGates):
                 f.write(" + ") 
             else:
-                f.write(" = 1 \n")           
+                f.write(" = 1 \n")                  
                 
     #Link X_I_K_L with X_I_K and X_I_L
     for fl in Flight._registry: #X_I
@@ -270,11 +270,11 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
                 
 #               XIK must be 1 for XIKL to be 1
                 f.write("-"+curXIK+" + "+curXIKL+" <=0\n") #both zero
-                f.write( curXIKL+" + "+curXIK+ " - " + curXIKL+"_Y"+str(i)+ " <=1\n") # both 1, _Y = 1
+                f.write( curXIKL+" + "+curXIK+ " - " + curXIKL+"_Y"+ " <=1\n") # both 1, _Y = 1
                 
 #               XIL must be 1 for XIKL to be 1
                 f.write("-"+curXIL+" + "+curXIKL+" <=0\n")
-                f.write( curXIKL+" +"+curXIL+"-" + curXIKL+"_Y"+str(i)+ " <=1\n")
+                f.write( curXIKL+" +"+curXIL+"-" + curXIKL+"_Y"+ " <=1\n")
                 
     #Have all flights require an XIKL (bay and gate)
     for fl in Flight._registry:
@@ -413,20 +413,18 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
                         f.write(" = 1 \n")
                     else: 
                         f.write(" + ")
-                            
+    maxj=80                            
     f.write("binary\n")
     j=0
     for i in binlist:
         f.write(i+" ")
         j+=1
-        if j == 40:
+        if j == maxj:
             f.write("\n")
-            j = j-40
+            j = j-maxj
     #write end file
     f.write("\n")
     f.write("end")
-
-
 
 
 #RUN CPlex:
