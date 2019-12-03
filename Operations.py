@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 plt.close("all")
 
 #Use the old nonrandomized data (0/1)
-staticDataSet = 0
+staticDataSet = 1
 
 #If 0, generate random dataset with following properties:
 timeStart = "11am"
@@ -23,8 +23,8 @@ flightsWanted= 20
 
 #plot results?
 plotResults = 1
-plotTimeStart = "11am" #in full hours #5pm for static
-plotTimeEnd = "4pm" #in full hours #11pm for static
+plotTimeStart = "4pm" #in full hours #5pm for static
+plotTimeEnd = "9pm" #in full hours #11pm for static
 
 #Terminal(name,openEvening,distance)
 t1 = Terminal("A",True,250)
@@ -56,7 +56,7 @@ b3 = Bay([g2,g4],[100,150],"B")
 b4 = Bay([g2,g4],[150,100],"B")
 
 b5 = Bay([g5,g6],[150,100],"A")
-b6 = Bay([g5,g6],[100,150],"A")
+b6 = Bay([g5,g6],[100,150],"A",refuelBay=True)
 b7 = Bay([g6,g7],[150,100],"A")
 b8 = Bay([g6,g7],[100,150],"A")
 
@@ -71,10 +71,10 @@ b15 = Bay([g11,g12],[100,100],"B")
 b16 = Bay([g12],[100],"B")
 
 #remote bays 
-b17 = Bay([g1,g3,g5,g6,g7],[600,600,600,600,600],"C")
-b18 = Bay([g1,g3,g5,g6,g7],[600,600,600,600,600],"C")
-b19 = Bay([g1,g3,g5,g6,g7],[600,600,600,600,600],"C")
-b20 = Bay([g1,g3,g5,g6,g7],[600,600,600,600,600],"C")
+b17 = Bay([g1,g3,g5,g6,g7],[600,600,600,600,600],"A")
+b18 = Bay([g1,g3,g5,g6,g7],[600,600,600,600,600],"A")
+b19 = Bay([g1,g3,g5,g6,g7],[600,600,600,600,600],"A")
+b20 = Bay([g1,g3,g5,g6,g7],[600,600,600,600,600],"A")
 
 #Airliner(name,gatePref)
 AirFrance   = Airline("AirFrance",g5)
@@ -101,7 +101,7 @@ Airport("Sydney Airport (Kingsford Smith Airport)", "SYD",5)
 if staticDataSet == 1:
     #Flight(identifier,passengers,arrivalTime,departureTime,formFactor,airliner)
     fl1 = Flight("JFK24", 200, "5:25pm","6:35pm","B",EasyJet)
-    fl2 = Flight("JFK26", 100, "5:55pm", "7:05pm","C",Delta)
+    fl2 = Flight("JFK26", 100, "5:55pm", "7:05pm","C",Delta,needToRefuel=True)
     fl3 = Flight("JFK27", 100, "6:05pm", "7:10pm","C",BritishAirways)
     fl4 = Flight("JFK28", 300, "6pm", "6:30pm","C",Transavia)
     fl5 = Flight("JFK29", 100, "6:25pm", "7:20pm","C",Transavia)
@@ -404,8 +404,16 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
     #Make parameters binary as needed
     
     #Bay constraint 4: Refueling constraint 
-    todo("Implement Refuel constraint")  #using bay.refuelBay (All bays currently able to refuel, change dataset to test)
-    
+    for fl in Flight._registry:
+        if fl.needToRefuel == True:
+            for bay in Bay._registry:
+                if bay.refuelBay == True:
+                    f.write("X_I"+str(fl.number)+"_K"+str(bay.number))
+                    if bay.number == bay.finalRefuelBay:
+                        f.write(" = 1 \n")
+                    else: 
+                        f.write(" + ")
+                            
     f.write("binary\n")
     j=0
     for i in binlist:

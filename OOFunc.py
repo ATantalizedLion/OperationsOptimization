@@ -141,15 +141,17 @@ class Gate(object):
 
 class Bay(object):
         _registry = [] #Keep track of all instances
-        def __init__(self,linkedGates,linkedGatesDistances,formFactor,refuelBay=True,serviceBay=False,remoteBay=False):
+        finalRefuelBay = 0 #Number of last refueling bay
+        def __init__(self,linkedGates,linkedGatesDistances,formFactor,refuelBay=False,remoteBay=False):
             self._registry.append(self) #Add gate to the list of gates
             self.number = len(Bay._registry) #Give Bay a number
             self.linkedGates = linkedGates #All gates linked to this one.
             self.linkedGatesDistances = linkedGatesDistances
             self.formFactor = formFactor
-            self.serviceBay = serviceBay #Whether or not bay can perform any servicing
-            self.remoteBay = remoteBay #requires busses and other resources
             self.refuelBay = refuelBay #wheteher or not the gate can refuel aircraft
+            if refuelBay == 1:
+                Bay.finalRefuelBay = self.number
+            self.remoteBay = remoteBay #requires busses and other resources #NOT IMPLEMENTED
             
 class Airline(object):
         _registry = [] #Keep track of all instances
@@ -164,7 +166,7 @@ class Flight(object):
         domFlights = 0 #amount of domestic flights
         finalDomFlight = 0 #Number of the last domestic flight
 
-        def __init__(self,identifier,passengers,arrivalTime,departureTime,formFactor,airline,assignedGate=0,domestic=0):
+        def __init__(self,identifier,passengers,arrivalTime,departureTime,formFactor,airline,assignedGate=0,domestic=0,needToRefuel=0):
             self._registry.append(self) #Add this flight to list of flights
             self.number=len(Flight._registry) #Give flight a number
             self.identifier = identifier #Store the flight code of the aircraft
@@ -173,10 +175,12 @@ class Flight(object):
             self.departureTime = departureTime #Departure time of the aircraft
             self.formFactor = formFactor #formFactor of the aircraft (for compliance of aircraft to size constraints)
             self.airline = airline #What airline does the aircraft belong to as an object
+            self.needToRefuel = needToRefuel
             self.domestic = domestic #Domestic or international
             if domestic == 1:
                 Flight.domFlights += 1
                 Flight.finalDomFlight = self.number
+
             #timeSlotsPer5Min
             self.timeSlotBegin = timeTo5Min(arrivalTime)
             self.timeSlotEnd = timeTo5Min(departureTime)
@@ -195,7 +199,7 @@ class Flight(object):
                 self.gatePref = airline.gatePref.number
             else:
                 self.gatePref = 0
-                
+            
         #Assign a gate:
         def assignGate(self,gate):
             self.assignedGate=gate 
