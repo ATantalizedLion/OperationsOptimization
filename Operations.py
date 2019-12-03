@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 plt.close("all")
 
 #Use the old nonrandomized data (0/1)
-staticDataSet = 1
+staticDataSet = 0
 
 #If 0, generate random dataset with following properties:
 timeStart = "11am"
@@ -23,8 +23,8 @@ flightsWanted= 20
 
 #plot results?
 plotResults = 1
-plotTimeStart = "4pm" #in full hours #5pm for static
-plotTimeEnd = "9pm" #in full hours #11pm for static
+plotTimeStart = "11am" #in full hours #5pm for static
+plotTimeEnd = "4pm" #in full hours #11pm for static
 
 #Terminal(name,openEvening,distance)
 t1 = Terminal("A",True,250)
@@ -469,29 +469,25 @@ for fl in Flight._registry:
         if 0.999999 <= float(solValueList[findVar]) <= 1.0001:
             fl.assignBay(bay)
 
-#Show dataset
-todo("Implement dataset mooie grafiekjes ")
-
 #Grafiekje solution:
-t=['12am','1am','2am', '3am', '4am', '5am', '6am', '7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm', '7pm', '8pm', '9pm', '10pm', '11pm', '12am']
-tTo5Min = []
-for i in range(len(t)):
-    tTo5Min.append(timeTo5Min(t[i]))
-tStartIndex = tTo5Min.index(timeTo5Min(plotTimeStart))
-tEndIndex   = tTo5Min.index(timeTo5Min(plotTimeEnd))
-
-#getTimetableMatrix(timeStart,timeEnd,amountGates)
-timetableMatrix=getTimetableMatrixGates(t[tStartIndex],t[tEndIndex],amountGates)
-timetableMatrix2=getTimetableMatrixBays(t[tStartIndex],t[tEndIndex],amountBays,1)
-#plotTimeTable
-plotTimetableGates(timetableMatrix,1,xTickLabels=t[tStartIndex:tEndIndex+1],xTickSpacing=11,yTickLabels=True)
-plotTimetableBays(timetableMatrix2,1,xTickLabels=t[tStartIndex:tEndIndex+1],xTickSpacing=11,yTickLabels=True,bays=1)
-
+if plotResults == 1:
+    t=['12am','1am','2am', '3am', '4am', '5am', '6am', '7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm', '7pm', '8pm', '9pm', '10pm', '11pm', '12am']
+    tTo5Min = []
+    for i in range(len(t)):
+        tTo5Min.append(timeTo5Min(t[i]))
+    tStartIndex = tTo5Min.index(timeTo5Min(plotTimeStart))
+    tEndIndex   = tTo5Min.index(timeTo5Min(plotTimeEnd))
+    
+    #getTimetableMatrix(timeStart,timeEnd,amountGates)
+    timetableMatrix=getTimetableMatrixGates(t[tStartIndex],t[tEndIndex],amountGates)
+    timetableMatrix2=getTimetableMatrixBays(t[tStartIndex],t[tEndIndex],amountBays,1)
+    #plotTimeTable
+    plotTimetableGates(timetableMatrix,1,xTickLabels=t[tStartIndex:tEndIndex+1],xTickSpacing=11,yTickLabels=True)
+    plotTimetableBays(timetableMatrix2,1,xTickLabels=t[tStartIndex:tEndIndex+1],xTickSpacing=11,yTickLabels=True,bays=1)
 
 #Bonus:
-
 #Bussen bij gate X, als bus er is, telt afstand minder zwaar
-todo("Implement busje")
+todo("Implement busje / verre bays")
 
         #e.g. 20 min on departure and 10 on arrival for gate, full time for bay.
 todo("Eventueel towing implementen (Naar andere bay als dat goedkoper is)")
