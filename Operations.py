@@ -10,6 +10,8 @@ import numpy as np
 from OOFunc import generateRunFiles, timeTo5Min, fiveMinToTime, getTimetableMatrixGates, plotTimetableBays, plotTimetableGates, getTimetableMatrixBays, Flight, Airline, Airport, Gate, Terminal, Bay, todo, getFlights
 import xml.etree.ElementTree as ET
 import matplotlib.pyplot as plt
+import matplotlib
+print(matplotlib.__version__)
 
 plt.close("all")
 
@@ -71,7 +73,7 @@ b15 = Bay([g11,g12],[100,100],"B")
 b16 = Bay([g12],[100],"B")
 
 #remote bays 
-#b20 = Bay(Gate._registry,[])
+b17 = Bay([g1,g3,g5,g6,g7],[600,600,600,600,600],"C")
 
 #Airliner(name,gatePref)
 AirFrance   = Airline("AirFrance",g5)
@@ -486,8 +488,6 @@ if plotResults == 1:
     plotTimetableBays(timetableMatrix2,1,xTickLabels=t[tStartIndex:tEndIndex+1],xTickSpacing=11,yTickLabels=True,bays=1)
 
 #Bonus:
-#Bussen bij gate X, als bus er is, telt afstand minder zwaar
-todo("Implement busje / verre bays")
 
         #e.g. 20 min on departure and 10 on arrival for gate, full time for bay.
 todo("Eventueel towing implementen (Naar andere bay als dat goedkoper is)")
