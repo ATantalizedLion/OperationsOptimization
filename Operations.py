@@ -14,18 +14,27 @@ import matplotlib.pyplot as plt
 plt.close("all")
 
 #Use the old nonrandomized data (0/1)
+
 #Use 2 to run the last generated data set again
 staticDataSet = 2
 
+staticDataSet = 1
+
+
 #If 0, generate random dataset with following properties:
-timeStart = "11am"
-timeEnd = "3pm"
+timeStart = "5pm"
+timeEnd = "9pm"
 flightsWanted= 20
 
 #plot results?
 plotResults = 1
+
 plotTimeStart = "11am" #in full hours #5pm for static
 plotTimeEnd = "3pm" #in full hours #11pm for static
+
+plotTimeStart = "5pm" #in full hours #5pm for static
+plotTimeEnd = "9pm" #in full hours #11pm for static
+
 
 #Terminal(name,openEvening,distance)
 t1 = Terminal("A",True,250)
@@ -35,8 +44,8 @@ t4 = Terminal("D",False,100)
 
 #Gate(terminal,domesticGate,distanceToTerminal)
 g1 = Gate(t1,True,100)
-g2 = Gate(t1,False,100)
-g3 = Gate(t1,True,300)
+g2 = Gate(t1,False,300)
+g3 = Gate(t1,True,100)
 g4 = Gate(t1,False,300)
 
 g5 = Gate(t2,False,100)
@@ -47,8 +56,8 @@ g8 = Gate(t3,False,100)
 g9 = Gate(t3,False,400)
 g10 = Gate(t3,False,700)
 
-g11 = Gate(t4,False,80)
-g12 = Gate(t4,False,380)
+g11 = Gate(t4,False,380)
+g12 = Gate(t4,False,80)
 
 #Bay(linkedGates,distLinkedGates,formFactor)
 b1 = Bay([g1,g3],[100,150],"B")
@@ -56,10 +65,10 @@ b2 = Bay([g1,g3],[150,100],"B")
 b3 = Bay([g2,g4],[100,150],"B")
 b4 = Bay([g2,g4],[150,100],"B")
 
-b5 = Bay([g5,g6],[150,100],"A")
-b6 = Bay([g5,g6],[100,150],"A")
-b7 = Bay([g6,g7],[150,100],"A")
-b8 = Bay([g6,g7],[100,150],"A")
+b5 = Bay([g5,g6],[100,150],"A")
+b6 = Bay([g5,g6],[150,100],"A")
+b7 = Bay([g6,g7],[100,150],"A")
+b8 = Bay([g6,g7],[150,100],"A")
 
 b9  = Bay([g8,g9],[150,100],"A")
 b10 = Bay([g8,g9],[100,150],"A")
@@ -73,9 +82,9 @@ b16 = Bay([g12],[100],"B")
 
 #remote bays 
 b17 = Bay([g1,g3,g5,g6,g7],[600,600,600,600,600],"A")
-b18 = Bay([g1,g3,g5,g6,g7],[600,600,600,600,600],"A")
-b19 = Bay([g1,g3,g5,g6,g7],[600,600,600,600,600],"A")
-b20 = Bay([g1,g3,g5,g6,g7],[600,600,600,600,600],"A")
+b18 = Bay([g1,g3,g5,g6,g7],[600,600,600,600,600],"B")
+b19 = Bay([g1,g3,g5,g6,g7],[600,600,600,600,600],"C")
+
 
 #Airliner(name,gatePref)
 AirFrance   = Airline("AirFrance",g5)
