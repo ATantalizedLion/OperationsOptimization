@@ -188,11 +188,13 @@ class Flight(object):
             self.timeSlotEndBuffer = timeTo5Min(departureTime)+2
             
             #for arrival emptying the aircraft is taken to take 15 minutes
-            self.timeSlotBeginEmpty = self.timeSlotBegin + 0 #End of arrival/end of boarding time slot
-            self.timeSlotEndEmpty = self.timeSlotBegin + 3 #End of arrival/end of boarding time slot
+            self.timeSlotBeginEmpty = self.timeSlotBegin #Start of arrival time slot
+            self.timeSlotBeginEmptyBuffer = self.timeSlotBegin - 2 #Start of arrival slot with buffer
+            self.timeSlotEndEmpty = self.timeSlotBegin + 3 #End of arrival time slot
             #boarding is taken to take 30 minutes
             self.timeSlotBeginBoard = self.timeSlotEnd - 6 #Start of boarding
-            self.timeSlotEndBoard = self.timeSlotEnd #Start of boarding
+            self.timeSlotEndBoard = self.timeSlotEnd #End of boarding
+            self.timeSlotEndBoardBuffer = self.timeSlotEnd + 2 #End of boarding with buffer
             
             #Get gatepref of related airline
             if airline.gatePref != 0:

@@ -137,7 +137,7 @@ if staticDataSet == 1:
     fl10 = Flight("DOM38", 200, "8:15pm", "10:05pm","B",EasyJet,domestic = 1)
     fl11 = Flight("JFK32", 200, "5:10pm", "5:55pm","B",KLM)
     fl12 = Flight("JFK33", 100, "5:30pm", "5:05pm","C",KLM)
-    fl13 = Flight("JFK34", 200, "8:05pm", "8:45pm","B",KLM)
+    fl13 = Flight("JFK34", 200, "8:05pm", "8:50pm","B",KLM)
     fl14 = Flight("JFK30", 100, "6:30pm", "7:30pm","C",AirFrance)
     fl15 = Flight("DOM23", 300, "5:15pm","6pm","A",KLM,domestic=1)
 elif staticDataSet == 2:
@@ -168,10 +168,10 @@ for fl in Flight._registry:
     j = 0
     for fl2 in Flight._registry:
         overlap = int(fl.timeSlotEndEmpty) - int(fl2.timeSlotBeginBoard)
-        if overlap >= 0 and int(fl2.timeSlotEndBoard) > int(fl.timeSlotBeginEmpty):
+        if overlap >= 0 and int(fl2.timeSlotEndBoardBuffer) > int(fl.timeSlotBeginEmptyBuffer):
             timematArr[i][j] = 1
-        overlap2 = int(fl.timeSlotEndEmpty) - int(fl2.timeSlotBeginEmpty)
-        if overlap2 >= 0 and int(fl2.timeSlotEndEmpty) > int(fl.timeSlotBeginEmpty):
+        overlap2 = int(fl.timeSlotEndEmpty) - int(fl2.timeSlotBeginEmptyBuffer)
+        if overlap2 >= 0 and int(fl2.timeSlotEndEmpty) > int(fl.timeSlotBeginEmptyBuffer):
             timematArr[i][j] = 1
         j += 1
     i += 1
@@ -181,10 +181,10 @@ i = 0
 for fl in Flight._registry:
     j = 0
     for fl2 in Flight._registry:
-        overlap = int(fl.timeSlotEndBoard) - int(fl2.timeSlotBeginBoard)
-        if overlap >= 0 and int(fl2.timeSlotEndBoard) > int(fl.timeSlotBeginBoard):
+        overlap = int(fl.timeSlotEndBoardBuffer) - int(fl2.timeSlotBeginBoard)
+        if overlap >= 0 and int(fl2.timeSlotEndBoardBuffer) > int(fl.timeSlotBeginBoard):
             timematDep[i][j] = 1
-        overlap2 = int(fl.timeSlotEndBoard) - int(fl2.timeSlotBeginEmpty)
+        overlap2 = int(fl.timeSlotEndBoardBuffer) - int(fl2.timeSlotBeginEmptyBuffer)
         if overlap2 >= 0 and int(fl2.timeSlotEndEmpty) > int(fl.timeSlotBeginBoard):
             timematDep[i][j] = 1
         j += 1
