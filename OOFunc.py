@@ -190,8 +190,8 @@ class Flight(object):
             #for arrival emptying the aircraft is taken to take 15 minutes
             self.timeSlotBeginEmpty = self.timeSlotBegin + 0 #End of arrival/end of boarding time slot
             self.timeSlotEndEmpty = self.timeSlotBegin + 3 #End of arrival/end of boarding time slot
-            #boarding is taken to take 15 minutes
-            self.timeSlotBeginBoard = self.timeSlotEnd - 3 #Start of boarding
+            #boarding is taken to take 30 minutes
+            self.timeSlotBeginBoard = self.timeSlotEnd - 6 #Start of boarding
             self.timeSlotEndBoard = self.timeSlotEnd #Start of boarding
             
             #Get gatepref of related airline
@@ -580,7 +580,7 @@ def getFlights(flightsWanted,timeStart,timeEnd):
         
         #work in 5 min slots
         flArr = random.randrange(timeStart,timeEnd)
-        flDep = flArr + random.randint(6,24) # stays 20 to 120 minutes
+        flDep = flArr + random.randint(9,24) # stays 20 to 120 minutes
     
         Flight(flName, flPass, fiveMinToTime(flArr), fiveMinToTime(flDep), flFF, flAirline,domestic=flDomestic)
         

@@ -15,76 +15,87 @@ plt.close("all")
 
 #Use the old nonrandomized data (0/1)
 
-#Use 2 to run the last generated data set again
-staticDataSet = 2
-
+#0 - Dynamic data set
+#1 - Static data set 
+#2 - last generated data set again
+#3 - simplified dataset 
 staticDataSet = 1
 
 
 #If 0, generate random dataset with following properties:
-timeStart = "5pm"
-timeEnd = "9pm"
+timeStart = "2pm"
+timeEnd = "6pm"
 flightsWanted= 20
 
 #plot results?
 plotResults = 1
 
-plotTimeStart = "11am" #in full hours #5pm for static
-plotTimeEnd = "3pm" #in full hours #11pm for static
-
 plotTimeStart = "5pm" #in full hours #5pm for static
-plotTimeEnd = "9pm" #in full hours #11pm for static
+plotTimeEnd = "11pm" #in full hours #11pm for static
 
-
-#Terminal(name,openEvening,distance)
-t1 = Terminal("A",True,250)
-t2 = Terminal("B",True,610)
-t3 = Terminal("C",True,460)
-t4 = Terminal("D",False,100)
-
-#Gate(terminal,domesticGate,distanceToTerminal)
-g1 = Gate(t1,True,100)
-g2 = Gate(t1,False,300)
-g3 = Gate(t1,True,100)
-g4 = Gate(t1,False,300)
-
-g5 = Gate(t2,False,100)
-g6 = Gate(t2,False,400)
-g7 = Gate(t2,False,700)
-
-g8 = Gate(t3,False,100)
-g9 = Gate(t3,False,400)
-g10 = Gate(t3,False,700)
-
-g11 = Gate(t4,False,380)
-g12 = Gate(t4,False,80)
-
-#Bay(linkedGates,distLinkedGates,formFactor)
-b1 = Bay([g1,g3],[100,150],"B")
-b2 = Bay([g1,g3],[150,100],"B")
-b3 = Bay([g2,g4],[100,150],"B")
-b4 = Bay([g2,g4],[150,100],"B")
-
-b5 = Bay([g5,g6],[100,150],"A")
-b6 = Bay([g5,g6],[150,100],"A")
-b7 = Bay([g6,g7],[100,150],"A")
-b8 = Bay([g6,g7],[150,100],"A")
-
-b9  = Bay([g8,g9],[150,100],"A")
-b10 = Bay([g8,g9],[100,150],"A")
-b11 = Bay([g9,g10],[150,100],"A")
-b12 = Bay([g9,g10],[100,150],"A")
-
-b13 = Bay([g11],[100],"B")
-b14 = Bay([g11,g12],[100,100],"B")
-b15 = Bay([g11,g12],[100,100],"B")
-b16 = Bay([g12],[100],"B")
-
-#remote bays 
-b17 = Bay([g1,g3,g5,g6,g7],[600,600,600,600,600],"A")
-b18 = Bay([g1,g3,g5,g6,g7],[600,600,600,600,600],"B")
-b19 = Bay([g1,g3,g5,g6,g7],[600,600,600,600,600],"C")
-
+if staticDataSet == 0 or staticDataSet == 1 or staticDataSet == 2:
+    #Terminal(name,openEvening,distance)
+    t1 = Terminal("A",True,250)
+    t2 = Terminal("B",True,610)
+    t3 = Terminal("C",True,460)
+    t4 = Terminal("D",False,100)
+    
+    #Gate(terminal,domesticGate,distanceToTerminal)
+    g1 = Gate(t1,True,100)
+    g2 = Gate(t1,False,300)
+    g3 = Gate(t1,True,100)
+    g4 = Gate(t1,False,300)
+    
+    g5 = Gate(t2,False,100)
+    g6 = Gate(t2,False,400)
+    g7 = Gate(t2,False,700)
+    
+    g8 = Gate(t3,False,100)
+    g9 = Gate(t3,False,400)
+    g10 = Gate(t3,False,700)
+    
+    g11 = Gate(t4,False,380)
+    g12 = Gate(t4,False,80)
+    
+    #Bay(linkedGates,distLinkedGates,formFactor)
+    b1 = Bay([g1,g3],[100,150],"B")
+    b2 = Bay([g1,g3],[150,100],"B")
+    b3 = Bay([g2,g4],[100,150],"B")
+    b4 = Bay([g2,g4],[150,100],"B")
+    
+    b5 = Bay([g5,g6],[100,150],"A")
+    b6 = Bay([g5,g6],[150,100],"A")
+    b7 = Bay([g6,g7],[100,150],"A")
+    b8 = Bay([g6,g7],[150,100],"A")
+    
+    b9  = Bay([g8,g9],[150,100],"A")
+    b10 = Bay([g8,g9],[100,150],"A")
+    b11 = Bay([g9,g10],[150,100],"A")
+    b12 = Bay([g9,g10],[100,150],"A")
+    
+    b13 = Bay([g11],[100],"B")
+    b14 = Bay([g11,g12],[100,100],"B")
+    b15 = Bay([g11,g12],[100,100],"B")
+    b16 = Bay([g12],[100],"B")
+    
+    #remote bays 
+    b17 = Bay([g1,g3,g5,g6,g7],[600,600,600,600,600],"A")
+    b18 = Bay([g1,g3,g5,g6,g7],[600,600,600,600,600],"B")
+    b19 = Bay([g1,g3,g5,g6,g7],[600,600,600,600,600],"C")
+    
+elif staticDataSet == 3: 
+    t1 = Terminal("A",True,250)
+    
+    g1 = Gate(t1,True,100)
+    g2 = Gate(t1,False,300)
+    g3 = Gate(t1,True,100)
+    g4 = Gate(t1,False,300)
+    
+    b1 = Bay([g1,g3],[100,150],"B")
+    b2 = Bay([g1,g3],[150,100],"B")
+    b3 = Bay([g2,g4],[100,150],"B")
+    b4 = Bay([g2,g4],[150,100],"C")
+    
 
 #Airliner(name,gatePref)
 AirFrance   = Airline("AirFrance",g5)
@@ -127,8 +138,14 @@ if staticDataSet == 1:
     fl15 = Flight("DOM23", 300, "5:15pm","6pm","A",KLM,domestic=1)
 elif staticDataSet == 2:
     import lastGeneratedDataset
-else:
+elif staticDataSet == 0:
     getFlights(flightsWanted,timeStart,timeEnd)
+elif staticDataSet == 3:
+    fl1 = Flight("DOM01", 200, "3:00pm", "4:00pm","B",KLM, domestic=1)
+    fl2 = Flight("DOM02", 100, "3:00pm", "4:00pm","B",KLM, domestic=1)
+    fl8 = Flight("JFK01", 200, "3:00pm", "4:00pm","B",Transavia)
+    fl8 = Flight("JFK02", 100, "3:00pm", "4:00pm","C",Transavia)
+    
     
 timemat = np.zeros((len(Flight._registry),len(Flight._registry))) #Generating time overlap matrix for full stay of aircraft
 i = 0
