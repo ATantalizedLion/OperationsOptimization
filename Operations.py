@@ -83,6 +83,14 @@ if staticDataSet == 0 or staticDataSet == 1 or staticDataSet == 2:
     b18 = Bay([g1,g3,g5,g6,g7],[600,600,600,600,600],"B")
     b19 = Bay([g1,g3,g5,g6,g7],[600,600,600,600,600],"C")
     
+    #Airliner(name,gatePref)
+    AirFrance   = Airline("AirFrance",g5)
+    KLM = Airline("KLM",g8)
+    Delta = Airline("Delta",g11)
+    BritishAirways=Airline("British Airways")
+    Transavia=Airline("Transavia")
+    EasyJet = Airline("EasyJet")
+
 elif staticDataSet == 3: 
     t1 = Terminal("A",True,250)
     
@@ -95,15 +103,11 @@ elif staticDataSet == 3:
     b2 = Bay([g1,g3],[150,100],"B")
     b3 = Bay([g2,g4],[100,150],"B")
     b4 = Bay([g2,g4],[150,100],"C")
+    #Airliner(name,gatePref)
+    KLM = Airline("KLM",g8)
+    Transavia=Airline("Transavia")
     
 
-#Airliner(name,gatePref)
-AirFrance   = Airline("AirFrance",g5)
-KLM = Airline("KLM",g8)
-Delta = Airline("Delta",g11)
-BritishAirways=Airline("British Airways")
-Transavia=Airline("Transavia")
-EasyJet = Airline("EasyJet")
 
 #init airports for flight schedule randomizer:
 #distances as if a second large airport in the Netherlands would exist
