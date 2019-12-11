@@ -11,7 +11,7 @@ import numpy as np
 import random
 
 def todo(string):
-    return print(string)
+    return #print(string)
 
 def timeToMin(Time):
     #Takes input and converts it to minutes.

@@ -19,7 +19,7 @@ plt.close("all")
 #1 - Static data set 
 #2 - last generated data set again
 #3 - simplified dataset 
-staticDataSet = 1
+staticDataSet = 2
 
 
 #If 0, generate random dataset with following properties:
@@ -28,9 +28,9 @@ timeEnd = "6pm"
 flightsWanted= 20
 
 #plot results?
-plotResults = 1
+plotResults = 0
 
-plotTimeStart = "5pm" #in full hours #5pm for static
+plotTimeStart = "3pm" #in full hours #5pm for static
 plotTimeEnd = "11pm" #in full hours #11pm for static
 
 if staticDataSet == 0 or staticDataSet == 1 or staticDataSet == 2:
@@ -104,7 +104,7 @@ elif staticDataSet == 3:
     b3 = Bay([g2,g4],[100,150],"B")
     b4 = Bay([g2,g4],[150,100],"C")
     #Airliner(name,gatePref)
-    KLM = Airline("KLM",g8)
+    KLM = Airline("KLM")
     Transavia=Airline("Transavia")
     
 
@@ -223,7 +223,6 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
     #generate Objective
     f.write("Minimize multi-objectives\n") #Z1 = sum_i sum_k Pi*Xi,k*Dterm_k
     f.write("OBJ1: Priority=2 Weight=1.0 Abstol=0.0 Reltol=0.0\n\n") #Choose gate closest to terminal exit, weighed by passengers in flight
-    
     for fl in Flight._registry:
         for ga in Gate._registry:
            f.write(str(fl.passengers*ga.distanceToTerminal)) 
@@ -236,13 +235,11 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
     f.write("\n")
     f.write("\n")
     f.write("OBJ2: Priority=6 Weight=1.0 Abstol=0.0 Reltol=0.0\n\n") #Maximize gate preference
-    
     for fl in Flight._registry: #Z2 = sum_i sum_k Xi,k * Dterm_k
         for ga in Gate._registry:
            if int(fl.gatePref)==ga.number:
-               f.write("-"+str(1))
+               f.write("-")#+str(1))
                f.write(" X_I"+str(fl.number)+"_L"+str(ga.number)+" ")
-               binlist.append("X_I"+str(fl.number)+"_L"+str(ga.number))
 
     f.write("\n")
     f.write("\n")    
@@ -465,7 +462,7 @@ lines = [line.strip() for line in lines]
 
 if lines[6].split('=')[0]=='objectiveValue':
     objectiveValue=float(lines[6].split('=')[1].strip('"'))
-    print("Objective value is",objectiveValue)
+    print("CPLEX objective value is",objectiveValue)
 else:
     print("ERROR: objectiveValue not at expected location!")
 
@@ -508,6 +505,39 @@ for fl in Flight._registry:
         if 0.999999 <= float(solValueList[findVar]) <= 1.0001:
             fl.assignBay(bay)
 
+#retrieve objective functions:
+obj1=0
+for fl in Flight._registry:
+    for ga in Gate._registry:
+       mult = fl.passengers*ga.distanceToTerminal
+       curVar = "X_I"+str(fl.number)+"_L"+str(ga.number)
+       findVar = solNameList.index(curVar)
+       obj1 += float(solValueList[findVar]) * mult
+
+obj2=0
+for fl in Flight._registry: #Z2 = sum_i sum_k Xi,k * Dterm_k
+    for ga in Gate._registry:
+       if int(fl.gatePref)==ga.number:
+           curVar = "X_I"+str(fl.number)+"_L"+str(ga.number)
+           findVar=solNameList.index(curVar)
+           obj2 += -float(solValueList[findVar])
+
+obj3=0
+for fl in Flight._registry:
+    for bay in Bay._registry:
+       for i in range(len(bay.linkedGates)):
+           ga=bay.linkedGates[i]
+           gaDist=bay.linkedGatesDistances[i] 
+           mult = fl.passengers*gaDist
+           curVar = "X_I"+str(fl.number)+"_K"+str(bay.number)+"_L"+str(ga.number)
+           findVar=solNameList.index(curVar)
+           obj3 += float(solValueList[findVar]) * mult
+
+print("Objective function for gate to terminal distance (obj1):  ",obj1)
+print("Objective function for gate preference (obj2):  ",obj2)
+print("Objective function for gate to bay distance (obj3):  ",obj3)
+
+
 #Grafiekje solution:
 if plotResults == 1:
     t=['12am','1am','2am', '3am', '4am', '5am', '6am', '7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm', '7pm', '8pm', '9pm', '10pm', '11pm', '12am']
@@ -515,8 +545,7 @@ if plotResults == 1:
     for i in range(len(t)):
         tTo5Min.append(timeTo5Min(t[i]))
     tStartIndex = tTo5Min.index(timeTo5Min(plotTimeStart))
-    tEndIndex   = tTo5Min.index(timeTo5Min(plotTimeEnd))
-    
+    tEndIndex   = tTo5Min.index(timeTo5Min(plotTimeEnd))    
     #getTimetableMatrix(timeStart,timeEnd,amountGates)
     timetableMatrix=getTimetableMatrixGates(t[tStartIndex],t[tEndIndex],amountGates)
     timetableMatrix2=getTimetableMatrixBays(t[tStartIndex],t[tEndIndex],amountBays,1)
@@ -529,3 +558,8 @@ if plotResults == 1:
 
 todo("Eventueel towing implementen (Naar andere bay als dat goedkoper is)")
 todo("Eventueel een A bay bezetbaar maken door 2 C planes")
+#
+#obj1List.append(-obj1)
+#obj2List.append(-obj2)
+#obj3List.append(-obj3)
+#objectiveList.append(objectiveValue)
