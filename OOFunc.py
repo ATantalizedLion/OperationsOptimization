@@ -165,7 +165,7 @@ class Flight(object):
         _registry = [] #Keep track of all instances
         domFlights = 0 #amount of domestic flights
         finalDomFlight = 0 #Number of the last domestic flight
-
+        buffer = 2
         def __init__(self,identifier,passengers,arrivalTime,departureTime,formFactor,airline,assignedGate=0,domestic=0,needToRefuel=0):
             self._registry.append(self) #Add this flight to list of flights
             self.number=len(Flight._registry) #Give flight a number
@@ -184,17 +184,17 @@ class Flight(object):
             #timeSlotsPer5Min
             self.timeSlotBegin = timeTo5Min(arrivalTime)
             self.timeSlotEnd = timeTo5Min(departureTime)
-            self.timeSlotBeginBuffer = timeTo5Min(arrivalTime)-2
-            self.timeSlotEndBuffer = timeTo5Min(departureTime)+2
+            self.timeSlotBeginBuffer = timeTo5Min(arrivalTime)- Flight.buffer
+            self.timeSlotEndBuffer = timeTo5Min(departureTime)+ Flight.buffer
             
             #for arrival emptying the aircraft is taken to take 15 minutes
             self.timeSlotBeginEmpty = self.timeSlotBegin #Start of arrival time slot
-            self.timeSlotBeginEmptyBuffer = self.timeSlotBegin - 2 #Start of arrival slot with buffer
+            self.timeSlotBeginEmptyBuffer = self.timeSlotBegin - Flight.buffer #Start of arrival slot with buffer
             self.timeSlotEndEmpty = self.timeSlotBegin + 3 #End of arrival time slot
             #boarding is taken to take 30 minutes
             self.timeSlotBeginBoard = self.timeSlotEnd - 6 #Start of boarding
             self.timeSlotEndBoard = self.timeSlotEnd #End of boarding
-            self.timeSlotEndBoardBuffer = self.timeSlotEnd + 2 #End of boarding with buffer
+            self.timeSlotEndBoardBuffer = self.timeSlotEnd +  Flight.buffer #End of boarding with buffer
             
             #Get gatepref of related airline
             if airline.gatePref != 0:

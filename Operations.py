@@ -11,7 +11,9 @@ from OOFunc import generateRunFiles, timeTo5Min, fiveMinToTime, getTimetableMatr
 import xml.etree.ElementTree as ET
 import matplotlib.pyplot as plt
 
-plt.close("all")
+#plt.close("all")
+
+Flight.buffer = 1
 
 #Use the old nonrandomized data (0/1)
 
@@ -28,10 +30,10 @@ timeEnd = "6pm"
 flightsWanted= 20
 
 #plot results?
-plotResults = 0
+plotResults = 1
 
-plotTimeStart = "3pm" #in full hours #5pm for static
-plotTimeEnd = "11pm" #in full hours #11pm for static
+plotTimeStart = "2pm" #in full hours #5pm for static
+plotTimeEnd = "6pm" #in full hours #11pm for static
 
 if staticDataSet == 0 or staticDataSet == 1 or staticDataSet == 2:
     #Terminal(name,openEvening,distance)
@@ -555,13 +557,3 @@ if plotResults == 1:
     plotTimetableGates(timetableMatrix,1,xTickLabels=t[tStartIndex:tEndIndex+1],xTickSpacing=11,yTickLabels=True)
     plotTimetableBays(timetableMatrix2,1,xTickLabels=t[tStartIndex:tEndIndex+1],xTickSpacing=11,yTickLabels=True,bays=1)
 
-#Bonus:
-#e.g. 20 min on departure and 10 on arrival for gate, full time for bay.
-
-todo("Eventueel towing implementen (Naar andere bay als dat goedkoper is)")
-todo("Eventueel een A bay bezetbaar maken door 2 C planes")
-#
-#obj1List.append(-obj1)
-#obj2List.append(-obj2)
-#obj3List.append(-obj3)
-#objectiveList.append(objectiveValue)
