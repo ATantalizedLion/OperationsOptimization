@@ -19,7 +19,7 @@ plt.close("all")
 #1 - Static data set 
 #2 - last generated data set again
 #3 - simplified dataset 
-staticDataSet = 2
+staticDataSet = 1
 
 
 #If 0, generate random dataset with following properties:
@@ -222,7 +222,7 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
 
     #generate Objective
     f.write("Minimize multi-objectives\n") #Z1 = sum_i sum_k Pi*Xi,k*Dterm_k
-    f.write("OBJ1: Priority=2 Weight=1.0 Abstol=0.0 Reltol=0.0\n\n") #Choose gate closest to terminal exit, weighed by passengers in flight
+    f.write("OBJ1: Priority=1 Weight=1.0 Abstol=0.0 Reltol=0.0\n\n") #Choose gate closest to terminal exit, weighed by passengers in flight
     for fl in Flight._registry:
         for ga in Gate._registry:
            f.write(str(fl.passengers*ga.distanceToTerminal)) 
@@ -234,7 +234,7 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
 
     f.write("\n")
     f.write("\n")
-    f.write("OBJ2: Priority=6 Weight=1.0 Abstol=0.0 Reltol=0.0\n\n") #Maximize gate preference
+    f.write("OBJ2: Priority=2 Weight=1.0 Abstol=0.0 Reltol=0.0\n\n") #Maximize gate preference
     for fl in Flight._registry: #Z2 = sum_i sum_k Xi,k * Dterm_k
         for ga in Gate._registry:
            if int(fl.gatePref)==ga.number:
@@ -243,7 +243,7 @@ with open("LPFiles\SecondIteration.lp","w+") as f:
 
     f.write("\n")
     f.write("\n")    
-    f.write("OBJ3: Priority=4 Weight=1.0 Abstol=0.0 Reltol=0.0\n\n") #Minimize gate - bay distance , weighed by passengers in flight
+    f.write("OBJ3: Priority=1 Weight=2.0 Abstol=0.0 Reltol=0.0\n\n") #Minimize gate - bay distance , weighed by passengers in flight
     for fl in Flight._registry:
         for bay in Bay._registry:
            for i in range(len(bay.linkedGates)):
@@ -523,6 +523,7 @@ for fl in Flight._registry: #Z2 = sum_i sum_k Xi,k * Dterm_k
            obj2 += -float(solValueList[findVar])
 
 obj3=0
+weight=2
 for fl in Flight._registry:
     for bay in Bay._registry:
        for i in range(len(bay.linkedGates)):
@@ -531,11 +532,12 @@ for fl in Flight._registry:
            mult = fl.passengers*gaDist
            curVar = "X_I"+str(fl.number)+"_K"+str(bay.number)+"_L"+str(ga.number)
            findVar=solNameList.index(curVar)
-           obj3 += float(solValueList[findVar]) * mult
+           obj3 += float(solValueList[findVar]) * mult * weight
 
 print("Objective function for gate to terminal distance (obj1):  ",obj1)
 print("Objective function for gate preference (obj2):  ",obj2)
 print("Objective function for gate to bay distance (obj3):  ",obj3)
+print("Objective function 1 and 3 combined: ", obj1+obj3)
 
 
 #Grafiekje solution:
