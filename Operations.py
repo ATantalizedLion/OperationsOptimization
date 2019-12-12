@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 
 #plt.close("all")
 
-Flight.buffer = 1
+Flight.buffer = 2
 
 #Use the old nonrandomized data (0/1)
 
@@ -21,7 +21,7 @@ Flight.buffer = 1
 #1 - Static data set 
 #2 - last generated data set again
 #3 - simplified dataset 
-staticDataSet = 1
+staticDataSet = 2
 
 
 #If 0, generate random dataset with following properties:
@@ -535,11 +535,13 @@ for fl in Flight._registry:
            curVar = "X_I"+str(fl.number)+"_K"+str(bay.number)+"_L"+str(ga.number)
            findVar=solNameList.index(curVar)
            obj3 += float(solValueList[findVar]) * mult * weight
-
+obj4 = obj1+2*obj3
 print("Objective function for gate to terminal distance (obj1):  ",obj1)
 print("Objective function for gate preference (obj2):  ",obj2)
 print("Objective function for gate to bay distance (obj3):  ",obj3)
 print("Objective function 1 and 3 combined: ", obj1+obj3)
+print("Objective function 1 and 3 combined, weighted: ", obj1+2*obj3)
+
 
 
 #Grafiekje solution:
@@ -557,3 +559,8 @@ if plotResults == 1:
     plotTimetableGates(timetableMatrix,1,xTickLabels=t[tStartIndex:tEndIndex+1],xTickSpacing=11,yTickLabels=True)
     plotTimetableBays(timetableMatrix2,1,xTickLabels=t[tStartIndex:tEndIndex+1],xTickSpacing=11,yTickLabels=True,bays=1)
 
+
+obj1List.append(obj1)
+obj2List.append(obj2)
+obj3List.append(obj3)
+obj4List.append(obj4)
