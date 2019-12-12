@@ -55,9 +55,9 @@ for i in range(len(a)):
     e.append(i)
 x=range(13)
 
-plt.bar(x,b)
-plt.title("Change in objective function as function of KLM gate preference")
+plt.bar(x,a)
+plt.title("Objective function as function of KLM gate preference")
 plt.xticks(e,d)
-plt.ylabel("Change in objective function (from no gate)")
+plt.ylabel("Objective function value")
 plt.xlabel("Gate")
 plt.show()
