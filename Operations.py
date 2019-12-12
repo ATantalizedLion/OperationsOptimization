@@ -96,7 +96,7 @@ if staticDataSet == 0 or staticDataSet == 1 or staticDataSet == 2 or staticDataS
     
     #Airliner(name,gatePref)
     AirFrance   = Airline("AirFrance",g5)
-    KLM = Airline("KLM",g1)
+    KLM = Airline("KLM",g8)
     Delta = Airline("Delta",g11)
     BritishAirways=Airline("British Airways")
     Transavia=Airline("Transavia")
