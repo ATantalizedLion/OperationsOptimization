@@ -210,8 +210,11 @@ class Flight(object):
             self.assignedBay=bay 
 
 def getTimetableMatrixGates(timeStart,timeEnd,amountGates):
+    if timeTo5Min(timeEnd) < timeTo5Min('8am'):
+        tEnd = int(timeTo5Min(timeEnd)+24*60/5)
+    else: 
+        tEnd = int(timeTo5Min(timeEnd))
     tStart=timeTo5Min(timeStart)
-    tEnd=timeTo5Min(timeEnd)
     dTime=tEnd-tStart
     timeTableMatrix=np.zeros((amountGates,dTime),dtype=object)
     for fl in Flight._registry:
@@ -260,7 +263,10 @@ def getTimetableMatrixGates(timeStart,timeEnd,amountGates):
 
 def getTimetableMatrixBays(timeStart,timeEnd,amountBays,showGate=0):
     tStart=timeTo5Min(timeStart)
-    tEnd=timeTo5Min(timeEnd)
+    if timeTo5Min(timeEnd) < timeTo5Min('8am'):
+        tEnd = int(timeTo5Min(timeEnd)+24*60/5)
+    else: 
+        tEnd = int(timeTo5Min(timeEnd))
     dTime=tEnd-tStart
     timeTableMatrix=np.zeros((amountBays,dTime),dtype=object)
     for fl in Flight._registry:

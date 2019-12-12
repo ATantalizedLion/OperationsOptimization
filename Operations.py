@@ -39,10 +39,10 @@ timeEnd = "11pm"
 flightsWanted= 30
 
 #plot results?
-plotResults = 0
+plotResults = 1
 
-plotTimeStart = "2pm" #in full hours #5pm for static
-plotTimeEnd = "6pm" #in full hours #11pm for static
+plotTimeStart = "3pm" #in full hours #5pm for static
+plotTimeEnd = "1am" #in full hours #11pm for static
 
 if staticDataSet == 0 or staticDataSet == 1 or staticDataSet == 2 or staticDataSet == 4:
     #Terminal(name,openEvening,distance)
@@ -553,12 +553,21 @@ print("Objective function 1 and 3 combined, weighted: ", obj1+2*obj3)
 
 #Grafiekje solution:
 if plotResults == 1:
-    t=['12am','1am','2am', '3am', '4am', '5am', '6am', '7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm', '7pm', '8pm', '9pm', '10pm', '11pm', '12am']
+    t=['8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm', '7pm', '8pm', '9pm', '10pm', '11pm', '12am','1am','2am', '3am', '4am', '5am','6am', '7am']
     tTo5Min = []
     for i in range(len(t)):
-        tTo5Min.append(timeTo5Min(t[i]))
+        if timeTo5Min(t[i]) < timeTo5Min('8am'):
+            tTo5Min.append(int(timeTo5Min(t[i])+24*60/5))
+        else:
+            tTo5Min.append(timeTo5Min(t[i]))
+    
+    if timeTo5Min(plotTimeEnd) < timeTo5Min('8am'):
+        timeTo5MinPlotEnd = int(timeTo5Min(plotTimeEnd)+24*60/5)
+    else: 
+        timeTo5MinPlotEnd = int(timeTo5Min(plotTimeEnd))
+        
     tStartIndex = tTo5Min.index(timeTo5Min(plotTimeStart))
-    tEndIndex   = tTo5Min.index(timeTo5Min(plotTimeEnd))    
+    tEndIndex   = tTo5Min.index(timeTo5MinPlotEnd)    
     #getTimetableMatrix(timeStart,timeEnd,amountGates)
     timetableMatrix=getTimetableMatrixGates(t[tStartIndex],t[tEndIndex],amountGates)
     timetableMatrix2=getTimetableMatrixBays(t[tStartIndex],t[tEndIndex],amountBays,1)
