@@ -228,8 +228,6 @@ for fl in Flight._registry:
 
 #RUN CPlex
     #Take input flights and generate LP file
-    
-todo("Implement objective function weights and priorities (currently they are pretty random)") 
 
 with open("LPFiles\SecondIteration.lp","w+") as f:
 
@@ -567,7 +565,6 @@ if plotResults == 1:
     #plotTimeTable
     plotTimetableGates(timetableMatrix,1,xTickLabels=t[tStartIndex:tEndIndex+1],xTickSpacing=11,yTickLabels=True)
     plotTimetableBays(timetableMatrix2,1,xTickLabels=t[tStartIndex:tEndIndex+1],xTickSpacing=11,yTickLabels=True,bays=1)
-
 
 obj1List.append(obj1)
 obj2List.append(obj2)
