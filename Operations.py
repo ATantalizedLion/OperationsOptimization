@@ -15,7 +15,15 @@ import matplotlib.pyplot as plt
 
 Flight.buffer = 2
 
-#Use the old nonrandomized data (0/1)
+
+resetLists = 1
+if resetLists == 1:
+    obj1List = []
+    obj2List = []
+    obj3List = []
+    obj4List = []
+elif resetLists == 2:
+    print("obj1List = ", obj1List, '\nobj2List = ', obj2List, '\nobj3List = ', obj3List, '\nobj4List = ', obj4List)
 
 #0 - Dynamic data set
 #1 - Static data set 
@@ -25,12 +33,12 @@ staticDataSet = 2
 
 
 #If 0, generate random dataset with following properties:
-timeStart = "2pm"
-timeEnd = "6pm"
-flightsWanted= 20
+timeStart = "3pm"
+timeEnd = "11pm"
+flightsWanted= 30
 
 #plot results?
-plotResults = 1
+plotResults = 0
 
 plotTimeStart = "2pm" #in full hours #5pm for static
 plotTimeEnd = "6pm" #in full hours #11pm for static
