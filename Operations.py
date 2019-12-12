@@ -536,7 +536,6 @@ for fl in Flight._registry: #Z2 = sum_i sum_k Xi,k * Dterm_k
            obj2 += -float(solValueList[findVar])
 
 obj3=0
-weight=2
 for fl in Flight._registry:
     for bay in Bay._registry:
        for i in range(len(bay.linkedGates)):
@@ -545,12 +544,11 @@ for fl in Flight._registry:
            mult = fl.passengers*gaDist
            curVar = "X_I"+str(fl.number)+"_K"+str(bay.number)+"_L"+str(ga.number)
            findVar=solNameList.index(curVar)
-           obj3 += float(solValueList[findVar]) * mult * weight
+           obj3 += float(solValueList[findVar]) * mult 
 obj4 = obj1+2*obj3
 print("Objective function for gate to terminal distance (obj1):  ",obj1)
 print("Objective function for gate preference (obj2):  ",obj2)
 print("Objective function for gate to bay distance (obj3):  ",obj3)
-print("Objective function 1 and 3 combined: ", obj1+obj3)
 print("Objective function 1 and 3 combined, weighted: ", obj1+2*obj3)
 
 
