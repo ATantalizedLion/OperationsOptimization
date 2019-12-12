@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 Flight.buffer = 2 #change buffer length (2 is default)
  
 #Saving objective functions (1= reset list, 2 = save last run)
-resetLists = 0
+resetLists = 1
 if resetLists == 1:
     obj1List = []
     obj2List = []
@@ -96,7 +96,7 @@ if staticDataSet == 0 or staticDataSet == 1 or staticDataSet == 2 or staticDataS
     
     #Airliner(name,gatePref)
     AirFrance   = Airline("AirFrance",g5)
-    KLM = Airline("KLM",g8)
+    KLM = Airline("KLM",g1)
     Delta = Airline("Delta",g11)
     BritishAirways=Airline("British Airways")
     Transavia=Airline("Transavia")
