@@ -13,10 +13,10 @@ import matplotlib.pyplot as plt
 
 #plt.close("all")
 
-Flight.buffer = 2
-
-
-resetLists = 1
+Flight.buffer = 2 #change buffer length (2 is default)
+ 
+#Saving objective functions (1= reset list, 2 = save last run)
+resetLists = 0
 if resetLists == 1:
     obj1List = []
     obj2List = []
@@ -29,7 +29,8 @@ elif resetLists == 2:
 #1 - Static data set 
 #2 - last generated data set again
 #3 - simplified dataset 
-staticDataSet = 2
+#4 - Generated dataset static
+staticDataSet = 4
 
 
 #If 0, generate random dataset with following properties:
@@ -43,7 +44,7 @@ plotResults = 0
 plotTimeStart = "2pm" #in full hours #5pm for static
 plotTimeEnd = "6pm" #in full hours #11pm for static
 
-if staticDataSet == 0 or staticDataSet == 1 or staticDataSet == 2:
+if staticDataSet == 0 or staticDataSet == 1 or staticDataSet == 2 or staticDataSet == 4:
     #Terminal(name,openEvening,distance)
     t1 = Terminal("A",True,250)
     t2 = Terminal("B",True,610)
@@ -152,6 +153,8 @@ if staticDataSet == 1:
     fl15 = Flight("DOM23", 300, "5:15pm","6pm","A",KLM,domestic=1)
 elif staticDataSet == 2:
     import lastGeneratedDataset
+elif staticDataSet == 4:
+    import staticGeneratedDataset
 elif staticDataSet == 0:
     getFlights(flightsWanted,timeStart,timeEnd)
 elif staticDataSet == 3:
